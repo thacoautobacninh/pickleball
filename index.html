@@ -172,6 +172,7 @@ form .dgb{background:#e5484d;color:#fff}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.logo{animation:none}}
 @media(max-width:600px){.brand{align-items:flex-start}.logo{width:48px;margin-top:4px}}
+.entry .clr{background:transparent;color:#ffb3b8;border:1px solid rgba(255,179,184,.5)}
 .none{color:#c8d6ea;background:rgba(255,255,255,.07);border-radius:16px;padding:20px}
 .dlg{position:fixed;inset:0;background:rgba(5,15,30,.6);display:grid;place-items:center;padding:16px;z-index:20}
 .dlg[hidden]{display:none}
@@ -253,7 +254,7 @@ form .dgb{background:#e5484d;color:#fff}
   <p class="note">Tính điểm theo luật giao bóng truyền thống: chỉ đội giao bóng được ghi điểm, vòng bảng chạm 11 không cách (10-10 thì ai ghi điểm tiếp là thắng); từ bán kết chạm 15 không cách; chung kết chọn 1 trận hoặc 3 trận thắng 2. Đánh đôi bắt đầu mỗi trận ở “0-0-2”.</p>
   </div>
   <div id="pChia">
-  <div class="entry" id="drawEntry" hidden><b id="drawInfo">Bốc thăm chia bảng</b><button id="openStage">Mở màn hình bốc thăm</button></div>
+  <div class="entry" id="drawEntry" hidden><b id="drawInfo">Bốc thăm chia bảng</b><button id="openStage">Mở màn hình bốc thăm</button><button id="clearDraw" class="clr" hidden>Xoá kết quả bốc thăm</button></div>
   <section id="drawSec" hidden style="margin-top:32px">
    <h2>Bốc thăm chia bảng</h2>
    <form id="drawForm">
@@ -439,6 +440,7 @@ function render(){
   $('drawSec').hidden=!adm();
   $('tChia').hidden=!(draw||adm());
   $('drawEntry').hidden=!(draw||adm());
+  $('clearDraw').hidden=!(draw&&adm());
   $('refBtn').textContent=refOn&&canWrite?(adm()?'Thoát (Ban tổ chức)':'Thoát chế độ trọng tài'):'Chế độ trọng tài';
   $('drawInfo').textContent=draw?`Bốc thăm: ${draw.picks.length} đội, ${draw.ng} bảng · đã rút ${draw.shown}/${draw.picks.length}`:'Chưa bốc thăm chia bảng';
 }
@@ -540,6 +542,13 @@ let lastHash=null;
 const TABS=['xep-hang','lich-dau','chia-bang'];let lastTab='san';
 function route(){const h=location.hash.slice(1),st=h==='boc-tham',det=h.startsWith('m-');const tab=det?'san':TABS.includes(h)?h:'san';if(!det&&!st)lastTab=tab;$('stage').hidden=!st;document.querySelector('header').hidden=st;$('tabbar').hidden=st;$('pSan').hidden=st||tab!=='san';document.querySelector('main').hidden=st||tab==='san';$('pXep').hidden=tab!=='xep-hang';$('pLich').hidden=tab!=='lich-dau';$('pChia').hidden=tab!=='chia-bang';for(const b of $('tabbar').querySelectorAll('[data-t]'))b.setAttribute('aria-current',String(!det&&b.dataset.t===tab));$('board').hidden=!det;$('backBtn').hidden=!det;$('liveSec').hidden=det;if(det)sel=h.slice(2);if(h!==lastHash){lastHash=h;scrollTo(0,0)}render();if(st){shownD=Math.min(shownD,draw?draw.shown:0);syncStage();poke();scrollTo(0,0)}}
 addEventListener('hashchange',route);
+let clrArmed=false;
+$('clearDraw').addEventListener('click',e=>{
+  if(!adm()||!draw||!dref)return;const b=e.currentTarget;
+  if(!clrArmed){clrArmed=true;b.textContent=draw.made?'Bấm lần nữa để xoá (lịch đã tạo vẫn giữ)':'Bấm lần nữa để xoá';setTimeout(()=>{clrArmed=false;b.textContent='Xoá kết quả bốc thăm'},4000);return}
+  clrArmed=false;b.textContent='Xoá kết quả bốc thăm';
+  onDraw(null);chain=chain.then(()=>dref.delete()).then(()=>toast('Đã xoá kết quả bốc thăm')).catch(()=>toast('Chưa xoá được, thử lại'));
+});
 $('openStage').addEventListener('click',()=>{location.hash='boc-tham'});
 try{const t=localStorage.getItem('pbTeams');if(t)$('teamsTxt').value=t}catch(e){}
 $('teamsTxt').addEventListener('input',e=>{try{localStorage.setItem('pbTeams',e.target.value)}catch(_){}});
