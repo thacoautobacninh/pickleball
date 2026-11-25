@@ -303,7 +303,7 @@ form.rules{grid-template-columns:1fr}
   <section id="drawSec" hidden style="margin-top:32px">
    <h2>Bốc thăm chia bảng</h2>
    <form id="drawForm">
-    <label class="full">Danh sách đội — mỗi dòng 1 đội, dạng “Tên đội | VĐV”. Thêm dấu * ở đầu dòng cho đội hạt giống (mỗi bảng 1 hạt giống).
+    <label class="full">Danh sách đội — mỗi dòng 1 cặp (“Tên đội | VĐV” hoặc chỉ tên VĐV). Muốn <b>xếp sẵn vào một bảng</b>, ghi chữ bảng trong ngoặc vuông ở đầu dòng, ví dụ <b>[A]</b> Nguyễn Văn A / Trần Văn B. Dấu * ở đầu dòng: hạt giống (mỗi bảng 1).
      <textarea name="teams" id="teamsTxt" required placeholder="*KIA - MAZDA | Minh Tuấn / Hoàng Long&#10;*Peugeot | Quang Huy / Đức Anh&#10;BMW - MINI | Thành Đạt / Minh Khôi&#10;Dịch vụ | Văn Hải / Thu Trang"></textarea></label>
     <label>Số bảng<select name="ng"><option>1</option><option>2</option><option>3</option><option>4</option><option>6</option><option selected>8</option></select></label>
     <label>Số sân<input name="courts" type="number" min="1" max="20" value="2"></label>
@@ -508,11 +508,24 @@ const rnd=n=>{const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]%n
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
 const GL=i=>String.fromCharCode(65+i);
 const pName=p=>(p.players||'').trim()||p.name;
-function parseTeams(txt){return txt.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{const seed=l.startsWith('*');l=l.replace(/^\*\s*/,'');const [name,players='']=l.split('|').map(s=>s.trim());return {name:(name||players).slice(0,40),players:players.slice(0,60),seed}}).filter(t=>t.name)}
+function parseTeams(txt){return txt.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{let fixed=null,seed=false;
+  for(let k=0;k<2;k++){const f=/^\[\s*([A-Za-z])\s*\]\s*/.exec(l);if(f){fixed=f[1].toUpperCase();l=l.slice(f[0].length)}if(l.startsWith('*')){seed=true;l=l.replace(/^\*\s*/,'')}}const [name,players='']=l.split('|').map(s=>s.trim());return {name:(name||players).slice(0,40),players:players.slice(0,60),seed:seed&&!fixed,fixed}}).filter(t=>t.name)}
+function groupCaps(n,g){return Array.from({length:g},(_,k)=>Math.floor(n/g)+(k<n%g?1:0))}
 function makePicks(teams,g){
-  const seeds=shuffle(teams.filter(t=>t.seed)),rest=shuffle(teams.filter(t=>!t.seed));const cnt=Array(g).fill(0);
-  /* Rút lần lượt theo thứ tự bảng A → B → C → … rồi quay lại A; thứ tự đội được xáo ngẫu nhiên. */
-  return [...seeds,...rest].map((t,i)=>({g:i%g,name:t.name,players:t.players,seed:!!t.seed}));
+  /* Rút lần lượt theo thứ tự bảng A → B → C → … rồi quay lại A.
+     Cặp xếp sẵn [A] được đặt vào đúng bảng ở lượt của bảng đó; hạt giống (*) ra ở lượt đầu; còn lại xáo ngẫu nhiên. */
+  const cap=groupCaps(teams.length,g),fixed=Array.from({length:g},()=>[]);
+  teams.filter(t=>t.fixed).forEach(t=>fixed[t.fixed.charCodeAt(0)-65].push(t));
+  fixed.forEach((f,k)=>{if(f.length>cap[k]){cap[k]=f.length}});
+  let over=cap.reduce((a,b)=>a+b,0)-teams.length;
+  for(let k=g-1;over>0&&k>=0;k--){while(over>0&&cap[k]>fixed[k].length&&cap[k]>Math.min(...cap)){cap[k]--;over--}}
+  for(let k=g-1;over>0&&k>=0;k--){while(over>0&&cap[k]>fixed[k].length){cap[k]--;over--}}
+  const seeds=shuffle(teams.filter(t=>t.seed&&!t.fixed)),rest=shuffle(teams.filter(t=>!t.seed&&!t.fixed)),fq=fixed.map(f=>shuffle(f)),out=[];
+  const R=Math.max(...cap);
+  for(let r=0;r<R;r++)for(let k=0;k<g;k++){if(r>=cap[k])continue;
+    let t=fq[k].shift();if(!t&&r===0&&seeds.length&&(cap[k]-fixed[k].length)>0)t=seeds.shift();if(!t)t=rest.shift()||seeds.shift();if(!t)continue;
+    out.push({g:k,name:t.name,players:t.players,seed:!!t.seed,fixed:!!t.fixed})}
+  return out;
 }
 function groupsOf(n){const gs=Array.from({length:draw.ng},()=>[]);draw.picks.slice(0,n).forEach((p,i)=>gs[p.g].push(Object.assign({i},p)));return gs}
 const ppl=t=>String(t||'').split(/\s*\/\s*/).map(x=>x.trim()).filter(Boolean);
@@ -529,13 +542,13 @@ function paintStage(newIdx=-1){
   G.innerHTML=groupsOf(shownD).map((g,k)=>`<div class="grp"><h3>Bảng ${GL(k)}</h3><ol>${g.map(p=>`<li class="${p.i===newIdx?'new':''}">${lines(pName(p))}</li>`).join('')}${'<li class="ph"><span>·</span></li>'.repeat(Math.max(0,cap[k]-g.length))}</ol></div>`).join('');
   if(newIdx<0){
     if(shownD===0){N.className='st-name';setName('Sẵn sàng');$('stTo').textContent=`${draw.picks.length} đội · ${draw.ng} bảng`;$('stPl').textContent=''}
-    else{const p=draw.picks[shownD-1];N.className='st-name';setName(pName(p));$('stTo').textContent=shownD>=draw.picks.length?'Hoàn tất bốc thăm':'Vào bảng '+GL(p.g);$('stPl').textContent=subOf(p)}
+    else{const p=draw.picks[shownD-1];N.className='st-name';setName(pName(p));$('stTo').textContent=shownD>=draw.picks.length?'Hoàn tất bốc thăm':'Vào bảng '+GL(p.g)+(p.fixed?' · xếp sẵn':'');$('stPl').textContent=subOf(p)}
   }
   renderCtl();
 }
 function animateTo(i){
   spinning=true;const p=draw.picks[i],N=$('stName');
-  const land=()=>{shownD=i+1;N.className='st-name';void N.offsetWidth;N.className='st-name land';setName(pName(p));$('stTo').textContent='Vào bảng '+GL(p.g);$('stPl').textContent=subOf(p);paintStage(i);spinning=false;syncStage()};
+  const land=()=>{shownD=i+1;N.className='st-name';void N.offsetWidth;N.className='st-name land';setName(pName(p));$('stTo').textContent='Vào bảng '+GL(p.g)+(p.fixed?' · xếp sẵn':'');$('stPl').textContent=subOf(p);paintStage(i);spinning=false;syncStage()};
   if(RM)return land();
   const pool=draw.picks.slice(i).map(pName);$('stTo').textContent='Đang rút…';$('stPl').textContent='';
   const iv=setInterval(()=>{N.className='st-name spin';setName(pool[rnd(pool.length)])},75);
@@ -594,7 +607,7 @@ $('stCtl').addEventListener('click',e=>{
   else if(s==='fs'){try{const p=document.documentElement.requestFullscreen?.();p&&p.catch(()=>toast('Trình duyệt không cho toàn màn hình — nhấn F11'))}catch(_){toast('Nhấn F11 để toàn màn hình')}}
   else if(s==='redo'){
     if(!confirmRedo){confirmRedo=true;renderCtl();setTimeout(()=>{confirmRedo=false;renderCtl()},3000);return}
-    confirmRedo=false;const teams=draw.picks.map(p=>({name:p.name,players:p.players,seed:p.seed}));
+    confirmRedo=false;const teams=draw.picks.map(p=>({name:p.name,players:p.players,seed:p.seed,fixed:p.fixed?GL(p.g):null}));
     saveDraw(Object.assign({},draw,{picks:makePicks(teams,draw.ng),shown:0,at:Date.now(),made:false}));
   }
 });
@@ -621,6 +634,9 @@ $('drawForm').addEventListener('submit',e=>{
   if(teams.length<2)return toast('Cần ít nhất 2 đội');
   if(teams.length<g*2)return toast('Mỗi bảng cần ít nhất 2 đội — giảm số bảng');
   if(teams.filter(t=>t.seed).length>g)return toast('Số đội hạt giống không được nhiều hơn số bảng');
+  {const bad=teams.find(t=>t.fixed&&t.fixed.charCodeAt(0)-65>=g);if(bad)return toast(`Có ${g} bảng (A–${GL(g-1)}), không có Bảng ${bad.fixed}`);
+   const capN=Math.ceil(teams.length/g),cnt={};teams.filter(t=>t.fixed).forEach(t=>cnt[t.fixed]=(cnt[t.fixed]||0)+1);
+   const full=Object.entries(cnt).find(([k,v])=>v>capN);if(full)return toast(`Bảng ${full[0]} xếp sẵn ${full[1]} cặp, quá ${capN} cặp/bảng`)}
   if(new Set(teams.map(t=>t.name.toLowerCase())).size!==teams.length)return toast('Có tên đội bị trùng');
   shownD=0;
   saveDraw({picks:makePicks(teams,g),ng:g,shown:0,at:Date.now(),made:false,opts:{dbl:f.get('dbl')==='1',...ruleFor('group'),courts:Math.max(1,Math.min(20,+f.get('courts')||1))}});
