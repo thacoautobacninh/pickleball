@@ -173,6 +173,10 @@ form .dgb{background:#e5484d;color:#fff}
 @media(prefers-reduced-motion:reduce){.logo{animation:none}}
 @media(max-width:600px){.brand{align-items:flex-start}.logo{width:48px;margin-top:4px}}
 .entry .clr{background:transparent;color:#ffb3b8;border:1px solid rgba(255,179,184,.5)}
+form.rules{grid-template-columns:1fr}
+.rrow{display:grid;grid-template-columns:minmax(0,1fr) repeat(3,minmax(0,1.3fr));gap:10px;align-items:end;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.rrow b{font-size:17px;align-self:center}
+@media(max-width:600px){.rrow{grid-template-columns:repeat(3,minmax(0,1fr))}.rrow b{grid-column:1/-1}.rrow label{font-size:13px}.rrow select{padding:0 6px;font-size:15px}}
 .none{color:#c8d6ea;background:rgba(255,255,255,.07);border-radius:16px;padding:20px}
 .dlg{position:fixed;inset:0;background:rgba(5,15,30,.6);display:grid;place-items:center;padding:16px;z-index:20}
 .dlg[hidden]{display:none}
@@ -245,9 +249,9 @@ form .dgb{background:#e5484d;color:#fff}
     <label>Sân<input name="court" maxlength="20" placeholder="Sân 1"></label>
     <label>Vòng / bảng<input name="round" id="roundIn" maxlength="30" placeholder="Bảng A, Bán kết 1, Chung kết…" list="roundList"><datalist id="roundList"><option value="Bảng A"><option value="Bảng B"><option value="Bảng C"><option value="Bảng D"><option value="Tứ kết"><option value="Bán kết 1"><option value="Bán kết 2"><option value="Tranh hạng ba"><option value="Chung kết"></datalist></label>
     <label>Nội dung<select name="dbl"><option value="1">Đôi hỗn hợp</option><option value="0">Đánh đơn</option></select></label>
-    <label>Luật điểm<select name="rule"><option value="11-1-0" selected>Chạm 11, không cách (vòng bảng)</option><option value="15-1-0">Chạm 15, không cách (bán kết, chung kết)</option><option value="11-2-17">Chạm 11, cách 2, tối đa 17</option><option value="11-2-0">Chạm 11, cách 2</option><option value="21-2-0">Chạm 21, cách 2</option></select></label>
-    <label>Số trận<select name="bo"><option value="1">1 trận</option><option value="3">3 trận thắng 2</option></select></label>
-    <p class="note full" style="margin:0">Gõ “Bán kết…”/“Chung kết” ở ô Vòng, luật tự chuyển sang chạm 15 không cách. Chung kết: chọn Số trận = 1 trận hoặc 3 trận thắng 2.</p><label>Giao bóng trước<select name="first"><option value="a">Đội A</option><option value="b">Đội B</option></select></label>
+    <label>Giai đoạn<select name="stage" id="stageSel"><option value="group">Vòng bảng</option><option value="semi">Bán kết</option><option value="final">Chung kết</option></select></label>
+    <p class="note" id="stageHint" style="margin:0;align-self:end"></p>
+    <p class="note full" style="margin:0">Luật điểm lấy theo giai đoạn (cài ở tab Bốc thăm → Luật thi đấu). Gõ “Bán kết…”/“Chung kết” ở ô Vòng, giai đoạn tự chọn theo.</p><label>Giao bóng trước<select name="first"><option value="a">Đội A</option><option value="b">Đội B</option></select></label>
     <button class="full" type="submit">Thêm trận</button>
    </form>
   </section>
@@ -255,6 +259,12 @@ form .dgb{background:#e5484d;color:#fff}
   </div>
   <div id="pChia">
   <div class="entry" id="drawEntry" hidden><b id="drawInfo">Bốc thăm chia bảng</b><button id="openStage">Mở màn hình bốc thăm</button><button id="clearDraw" class="clr" hidden>Xoá kết quả bốc thăm</button></div>
+  <section id="rulesSec" hidden style="margin-top:32px">
+   <h2>Luật thi đấu</h2>
+   <form id="rulesForm" class="rules"><div class="rrow"><b>Vòng bảng</b><label>Chạm<select name="group_to"><option>11</option><option>15</option><option>21</option></select></label><label>Cách<select name="group_wb"><option value="1">Không</option><option value="2">2 điểm</option></select></label><label>Số trận<select name="group_bo"><option value="1">1 trận</option><option value="3">3 thắng 2</option></select></label></div><div class="rrow"><b>Bán kết</b><label>Chạm<select name="semi_to"><option>11</option><option>15</option><option>21</option></select></label><label>Cách<select name="semi_wb"><option value="1">Không</option><option value="2">2 điểm</option></select></label><label>Số trận<select name="semi_bo"><option value="1">1 trận</option><option value="3">3 thắng 2</option></select></label></div><div class="rrow"><b>Chung kết</b><label>Chạm<select name="final_to"><option>11</option><option>15</option><option>21</option></select></label><label>Cách<select name="final_wb"><option value="1">Không</option><option value="2">2 điểm</option></select></label><label>Số trận<select name="final_bo"><option value="1">1 trận</option><option value="3">3 thắng 2</option></select></label></div><button type="submit">Lưu luật thi đấu</button>
+    <p class="note" style="margin:0">Lưu xong, các trận <b>chưa đấu</b> của từng giai đoạn tự đổi theo luật mới. Trận đang đánh hoặc đã xong giữ nguyên.</p>
+   </form>
+  </section>
   <section id="drawSec" hidden style="margin-top:32px">
    <h2>Bốc thăm chia bảng</h2>
    <form id="drawForm">
@@ -263,8 +273,8 @@ form .dgb{background:#e5484d;color:#fff}
     <label>Số bảng<select name="ng"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>6</option><option>8</option></select></label>
     <label>Số sân<input name="courts" type="number" min="1" max="20" value="2"></label>
     <label>Nội dung<select name="dbl"><option value="1">Đôi hỗn hợp</option><option value="0">Đánh đơn</option></select></label>
-    <label>Luật điểm<select name="rule"><option value="11-1-0" selected>Chạm 11, không cách (vòng bảng)</option><option value="15-1-0">Chạm 15, không cách (bán kết, chung kết)</option><option value="11-2-17">Chạm 11, cách 2, tối đa 17</option><option value="11-2-0">Chạm 11, cách 2</option><option value="21-2-0">Chạm 21, cách 2</option></select></label>
-    <label>Số trận<select name="bo"><option value="1">1 trận</option><option value="3">3 trận thắng 2</option></select></label>
+    
+    <p class="note full" style="margin:0">Các trận vòng bảng dùng luật <b>Vòng bảng</b> ở mục Luật thi đấu phía trên.</p>
     <button class="full" type="submit">Bốc thăm và mở màn hình trình chiếu</button>
    </form>
    <p class="note">Kết quả được giữ bí mật cho tới khi bạn bấm “Rút đội tiếp theo” trên màn hình trình chiếu. Bốc xong, bấm “Tạo lịch thi đấu” để tự xếp các trận vòng tròn trong từng bảng.</p>
@@ -298,6 +308,12 @@ try{const h=location.hash.slice(1);if(h.startsWith('m-'))sel=h.slice(2)}catch(e)
 
 const toast=t=>{const m=$('msg');m.textContent=t;m.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>m.style.display='none',2600)};
 const nm=(m,t)=>(m[t]?.players||'').trim()||(m[t]?.name||'').trim()||('Đội '+t.toUpperCase());
+const DEF_RULES={group:{to:11,wb:1,bo:1},semi:{to:15,wb:1,bo:1},final:{to:15,wb:1,bo:1}};
+let RULES=JSON.parse(JSON.stringify(DEF_RULES)),rulesRef=null;
+const STAGES={group:'Vòng bảng',semi:'Bán kết',final:'Chung kết'};
+const stageOf=m=>m.stage||(/chung kết/i.test(m.round||'')?'final':/bán kết|tranh hạng/i.test(m.round||'')?'semi':'group');
+const ruleFor=st=>{const R=RULES[st]||DEF_RULES[st];return {to:R.to,winBy:R.wb,cap:0,bo:R.bo}};
+const ruleDesc=st=>{const R=RULES[st]||DEF_RULES[st];return 'Chạm '+R.to+' · '+(R.wb===1?'không cách':'cách 2')+' · '+(R.bo===3?'3 trận thắng 2':'1 trận')};
 const ruleOf=f=>{const [to,winBy,cap]=String(f.get('rule')||'11-1-0').split('-').map(Number);return {to,winBy,cap}};
 const ruleTxt=m=>'chạm '+m.to+((m.winBy||2)===1?' · không cách':' · cách 2'+(m.cap>m.to?' · tối đa '+m.cap:''));
 const wins=m=>{const w=[0,0];(m.games||[]).forEach(g=>{w[g[0]>g[1]?0:1]++});return w};
@@ -327,6 +343,7 @@ function sideOut(m){const n=withHist(m);n.srv=oth(n.srv);n.sn=1;return n}
 function undo(m){const h=(m.hist||[]).slice();if(!h.length)return null;const s=JSON.parse(h.pop());const n=JSON.parse(JSON.stringify(m));delete n.id;Object.assign(n,s);n.hist=h;n.t=Date.now();return n}
 
 let chain=Promise.resolve();
+function PATCH(id,fields){saveOp(id,x=>{const n=JSON.parse(JSON.stringify(x));delete n.id;Object.assign(n,fields);return n})}
 function saveOp(id,f){
   if(!col)return;
   const i=matches.findIndex(x=>x.id===id);
@@ -438,6 +455,7 @@ function render(){
   $('addSec').hidden=!adm();
   $('resetSec').hidden=!adm();
   $('drawSec').hidden=!adm();
+  $('rulesSec').hidden=!adm();
   $('tChia').hidden=!(draw||adm());
   $('drawEntry').hidden=!(draw||adm());
   $('clearDraw').hidden=!(draw&&adm());
@@ -520,7 +538,7 @@ function makeSchedule(){
   const o=draw.opts||{dbl:true,to:11,bo:1,courts:1};const gs=groupsOf(draw.picks.length);const R=gs.map(rr);const maxR=Math.max(...R.map(r=>r.length));const list=[];
   for(let r=0;r<maxR;r++)gs.forEach((g,k)=>(R[k][r]||[]).forEach(([a,b])=>list.push({a,b,round:`Bảng ${GL(k)} · Lượt ${r+1}`})));
   const base=Date.now();
-  list.forEach((x,i)=>{const n={a:{name:x.a.name,players:x.a.players||''},b:{name:x.b.name,players:x.b.players||''},court:'Sân '+(i%o.courts+1),round:x.round,dbl:o.dbl,to:o.to,winBy:o.winBy||2,cap:o.cap||0,bestOf:o.bo,first:'a',srv:'a',sn:o.dbl?2:1,sc:[0,0],games:[],status:'up',hist:[],order:base+i,t:base};const ref=col.doc();chain=chain.then(()=>ref.set(n))});
+  list.forEach((x,i)=>{const n={a:{name:x.a.name,players:x.a.players||''},b:{name:x.b.name,players:x.b.players||''},court:'Sân '+(i%o.courts+1),round:x.round,dbl:o.dbl,stage:'group',to:o.to,winBy:o.winBy||2,cap:o.cap||0,bestOf:o.bo,first:'a',srv:'a',sn:o.dbl?2:1,sc:[0,0],games:[],status:'up',hist:[],order:base+i,t:base};const ref=col.doc();chain=chain.then(()=>ref.set(n))});
   saveDraw(Object.assign({},draw,{made:true}));
   chain=chain.then(()=>toast(`Đã tạo ${list.length} trận`));
 }
@@ -560,7 +578,7 @@ $('drawForm').addEventListener('submit',e=>{
   if(teams.filter(t=>t.seed).length>g)return toast('Số đội hạt giống không được nhiều hơn số bảng');
   if(new Set(teams.map(t=>t.name.toLowerCase())).size!==teams.length)return toast('Có tên đội bị trùng');
   shownD=0;
-  saveDraw({picks:makePicks(teams,g),ng:g,shown:0,at:Date.now(),made:false,opts:{dbl:f.get('dbl')==='1',...ruleOf(f),bo:+f.get('bo'),courts:Math.max(1,Math.min(20,+f.get('courts')||1))}});
+  saveDraw({picks:makePicks(teams,g),ng:g,shown:0,at:Date.now(),made:false,opts:{dbl:f.get('dbl')==='1',...ruleFor('group'),courts:Math.max(1,Math.min(20,+f.get('courts')||1))}});
   location.hash='boc-tham';
 });
 
@@ -625,9 +643,22 @@ $('board').addEventListener('click',e=>{
   }
   if(f)saveOp(m.id,f);
 });
-$('roundIn').addEventListener('input',e=>{const v=e.target.value,sel=$('addForm').elements.rule;
-  if(/bán kết|chung kết|tranh hạng/i.test(v))sel.value='15-1-0';else if(/bảng|tứ kết/i.test(v))sel.value='11-1-0';
-  if(!/chung kết/i.test(v))$('addForm').elements.bo.value='1';});
+function stageHint(){$('stageHint').textContent='Luật: '+ruleDesc($('stageSel').value)}
+$('stageSel').addEventListener('change',stageHint);
+$('roundIn').addEventListener('input',e=>{const v=e.target.value;
+  $('stageSel').value=/chung kết/i.test(v)?'final':/bán kết|tranh hạng/i.test(v)?'semi':'group';stageHint()});
+function fillRules(){const F=$('rulesForm');if(F.contains(document.activeElement))return;
+  for(const k in DEF_RULES){F.elements[k+'_to'].value=String(RULES[k].to);F.elements[k+'_wb'].value=String(RULES[k].wb);F.elements[k+'_bo'].value=String(RULES[k].bo)}stageHint()}
+function onRules(d){RULES=JSON.parse(JSON.stringify(DEF_RULES));if(d)for(const k in DEF_RULES)if(d[k])RULES[k]={to:+d[k].to||RULES[k].to,wb:+d[k].wb||RULES[k].wb,bo:+d[k].bo||RULES[k].bo};fillRules();render()}
+$('rulesForm').addEventListener('submit',e=>{
+  e.preventDefault();if(!rulesRef||!adm())return;const F=e.target,d={};
+  for(const k in DEF_RULES)d[k]={to:+F.elements[k+'_to'].value,wb:+F.elements[k+'_wb'].value,bo:+F.elements[k+'_bo'].value};
+  RULES=d;let n=0;
+  chain=chain.then(()=>rulesRef.set(Object.assign({t:Date.now()},d))).catch(()=>toast('Chưa lưu được luật'));
+  matches.filter(m=>m.status==='up').forEach(m=>{const R=d[stageOf(m)];if(m.to===R.to&&(m.winBy||2)===R.wb&&m.bestOf===R.bo&&!m.cap)return;n++;
+    PATCH(m.id,{to:R.to,winBy:R.wb,cap:0,bestOf:R.bo,stage:stageOf(m)})});
+  chain=chain.then(()=>toast('Đã lưu luật'+(n?` · cập nhật ${n} trận chưa đấu`:'')));render();
+});
 /* Xoá giải: chỉ lưu bản mã hoá (PBKDF2) của mật khẩu, không lưu mật khẩu gốc. */
 const RESET_SALT='thaco-pickleball-reset',RESET_HASH='ba88a33b722e706020ace718b8bd3af980516c95845c18b42c58f6123b22115f';
 async function pbkdf(pw,salt){
@@ -658,7 +689,7 @@ $('addForm').addEventListener('submit',e=>{
   e.preventDefault();if(!col||!adm())return;
   const f=new FormData(e.target);const dbl=f.get('dbl')==='1';const first=f.get('first');
   const n={a:{name:f.get('an').trim(),players:f.get('ap').trim()},b:{name:f.get('bn').trim(),players:f.get('bp').trim()},court:f.get('court').trim(),round:f.get('round').trim(),
-    dbl,...ruleOf(f),bestOf:+f.get('bo'),first,srv:first,sn:dbl?2:1,sc:[0,0],games:[],status:'up',hist:[],order:Date.now(),t:Date.now()};
+    dbl,stage:f.get('stage'),to:ruleFor(f.get('stage')).to,winBy:ruleFor(f.get('stage')).winBy,cap:0,bestOf:ruleFor(f.get('stage')).bo,first,srv:first,sn:dbl?2:1,sc:[0,0],games:[],status:'up',hist:[],order:Date.now(),t:Date.now()};
   const ref=col.doc();matches.push(Object.assign({id:ref.id},n));sel=ref.id;filter='up';
   for(const x of $('tabs').children)x.setAttribute('aria-pressed',String(x.dataset.f==='up'));
   render();e.target.reset();toast('Đã thêm trận');
@@ -678,6 +709,7 @@ route();
   col=db.collection('matches');
   dref=db.doc('meta/draw');
   dref.onSnapshot(s=>onDraw(s.exists?s.data():null),()=>{});
+  rulesRef=db.doc('meta/rules');rulesRef.onSnapshot(s=>onRules(s.exists?s.data():null),()=>{});
   col.onSnapshot(s=>{
     if(!s.metadata.fromCache)clearTimeout(timer);
     got=true;matches=s.docs.filter(x=>x.exists).map(x=>Object.assign({id:x.id},x.data()));
