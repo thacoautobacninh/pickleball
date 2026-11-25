@@ -433,7 +433,8 @@ const pName=p=>(p.players||'').trim()||p.name;
 function parseTeams(txt){return txt.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{const seed=l.startsWith('*');l=l.replace(/^\*\s*/,'');const [name,players='']=l.split('|').map(s=>s.trim());return {name:(name||players).slice(0,40),players:players.slice(0,60),seed}}).filter(t=>t.name)}
 function makePicks(teams,g){
   const seeds=shuffle(teams.filter(t=>t.seed)),rest=shuffle(teams.filter(t=>!t.seed));const cnt=Array(g).fill(0);
-  return [...seeds,...rest].map(t=>{const min=Math.min(...cnt);const c=cnt.map((x,k)=>x===min?k:-1).filter(k=>k>=0);const k=c[rnd(c.length)];cnt[k]++;return {g:k,name:t.name,players:t.players,seed:!!t.seed}});
+  /* Rút lần lượt theo thứ tự bảng A → B → C → … rồi quay lại A; thứ tự đội được xáo ngẫu nhiên. */
+  return [...seeds,...rest].map((t,i)=>({g:i%g,name:t.name,players:t.players,seed:!!t.seed}));
 }
 function groupsOf(n){const gs=Array.from({length:draw.ng},()=>[]);draw.picks.slice(0,n).forEach((p,i)=>gs[p.g].push(Object.assign({i},p)));return gs}
 const ppl=t=>String(t||'').split(/\s*\/\s*/).map(x=>x.trim()).filter(Boolean);
