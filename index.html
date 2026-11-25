@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Pickleball Cup Peugeot</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2096%2096%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cdefs%3E%3CradialGradient%20id%3D%22fg%22%20cx%3D%2235%25%22%20cy%3D%2230%25%22%20r%3D%2275%25%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23f4ff9c%22/%3E%3Cstop%20offset%3D%22.55%22%20stop-color%3D%22%23d4ef4a%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%239fbf1f%22/%3E%3C/radialGradient%3E%3CclipPath%20id%3D%22fc%22%3E%3Ccircle%20cx%3D%2248%22%20cy%3D%2248%22%20r%3D%2244%22/%3E%3C/clipPath%3E%3C/defs%3E%3Ccircle%20cx%3D%2248%22%20cy%3D%2248%22%20r%3D%2244%22%20fill%3D%22url%28%23fg%29%22/%3E%3Cg%20clip-path%3D%22url%28%23fc%29%22%20fill%3D%22%237f9a12%22%20opacity%3D%22.75%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2220%22%20r%3D%225.2%22/%3E%3Ccircle%20cx%3D%2248%22%20cy%3D%2216%22%20r%3D%225.2%22/%3E%3Ccircle%20cx%3D%2264%22%20cy%3D%2226%22%20r%3D%225.2%22/%3E%3Ccircle%20cx%3D%2220%22%20cy%3D%2236%22%20r%3D%225.2%22/%3E%3Ccircle%20cx%3D%2240%22%20cy%3D%2234%22%20r%3D%225.2%22/%3E%3Ccircle%20cx%3D%2258%22%20cy%3D%2244%22%20r%3D%225.2%22/%3E%3Ccircle%20cx%3D%2276%22%20cy%3D%2242%22%20r%3D%225.2%22/%3E%3Ccircle%20cx%3D%2228%22%20cy%3D%2254%22%20r%3D%225.2%22/%3E%3Ccircle%20cx%3D%2246%22%20cy%3D%2256%22%20r%3D%225.2%22/%3E%3Ccircle%20cx%3D%2266%22%20cy%3D%2262%22%20r%3D%225.2%22/%3E%3Ccircle%20cx%3D%2236%22%20cy%3D%2272%22%20r%3D%225.2%22/%3E%3Ccircle%20cx%3D%2254%22%20cy%3D%2276%22%20r%3D%225.2%22/%3E%3Ccircle%20cx%3D%2220%22%20cy%3D%2262%22%20r%3D%225.2%22/%3E%3C/g%3E%3Cellipse%20cx%3D%2234%22%20cy%3D%2226%22%20rx%3D%2214%22%20ry%3D%228%22%20fill%3D%22%23fff%22%20opacity%3D%22.35%22%20transform%3D%22rotate%28-30%2034%2026%29%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -166,6 +167,11 @@ header.top{padding-bottom:18px}
 .rst{border-color:#e5484d}
 .rst .err{color:#e5484d;font-size:14px;min-height:1.2em}
 form .dgb{background:#e5484d;color:#fff}
+.brand{display:flex;align-items:center;gap:clamp(12px,1.6vw,20px)}
+.logo{flex:none;width:clamp(56px,7vw,92px);height:auto;filter:drop-shadow(0 8px 16px rgba(0,0,0,.35));animation:spin 14s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.logo{animation:none}}
+@media(max-width:600px){.brand{align-items:flex-start}.logo{width:48px;margin-top:4px}}
 .none{color:#c8d6ea;background:rgba(255,255,255,.07);border-radius:16px;padding:20px}
 .dlg{position:fixed;inset:0;background:rgba(5,15,30,.6);display:grid;place-items:center;padding:16px;z-index:20}
 .dlg[hidden]{display:none}
@@ -189,7 +195,7 @@ form .dgb{background:#e5484d;color:#fff}
 <header class="top band">
  <div class="wrap">
   <div class="hd">
-   <div><h1>Giải Pickleball<span class="cup">Tranh Cup Peugeot · THACO AUTO Bắc Ninh</span></h1><div class="info"><span class="date">28.11.2026 · Thứ 7 · từ 7h30</span><span>Sân Pickleball Kinh Bắc, Bắc Ninh</span><span class="mix">Đôi hỗn hợp</span></div><div class="sub" id="status">Đang kết nối tỉ số trực tuyến…</div></div>
+   <div class="brand"><svg class="logo" aria-hidden="true" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="hg" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#f4ff9c"/><stop offset=".55" stop-color="#d4ef4a"/><stop offset="1" stop-color="#9fbf1f"/></radialGradient><clipPath id="hc"><circle cx="48" cy="48" r="44"/></clipPath></defs><circle cx="48" cy="48" r="44" fill="url(#hg)"/><g clip-path="url(#hc)" fill="#7f9a12" opacity=".75"><circle cx="30" cy="20" r="5.2"/><circle cx="48" cy="16" r="5.2"/><circle cx="64" cy="26" r="5.2"/><circle cx="20" cy="36" r="5.2"/><circle cx="40" cy="34" r="5.2"/><circle cx="58" cy="44" r="5.2"/><circle cx="76" cy="42" r="5.2"/><circle cx="28" cy="54" r="5.2"/><circle cx="46" cy="56" r="5.2"/><circle cx="66" cy="62" r="5.2"/><circle cx="36" cy="72" r="5.2"/><circle cx="54" cy="76" r="5.2"/><circle cx="20" cy="62" r="5.2"/></g><ellipse cx="34" cy="26" rx="14" ry="8" fill="#fff" opacity=".35" transform="rotate(-30 34 26)"/></svg><div><h1>Giải Pickleball<span class="cup">Tranh Cup Peugeot · THACO AUTO Bắc Ninh</span></h1><div class="info"><span class="date">28.11.2026 · Thứ 7 · từ 7h30</span><span>Sân Pickleball Kinh Bắc, Bắc Ninh</span><span class="mix">Đôi hỗn hợp</span></div><div class="sub" id="status">Đang kết nối tỉ số trực tuyến…</div></div></div>
    <div class="hbtns"><button class="tog" id="refBtn" aria-pressed="false" hidden>Chế độ trọng tài</button></div>
   </div>
   </div>
@@ -266,7 +272,7 @@ form .dgb{background:#e5484d;color:#fff}
  </div>
 </main>
 <section id="stage" hidden aria-live="polite">
- <div class="st-top"><div class="st-t">Bốc thăm chia bảng</div><div class="st-s">Giải Pickleball Tranh Cup Peugeot · THACO AUTO Bắc Ninh</div></div>
+ <div class="st-top"><div class="st-t" style="display:flex;align-items:center;gap:16px"><svg aria-hidden="true" style="width:1em;height:1em;flex:none" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="sg" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#f4ff9c"/><stop offset=".55" stop-color="#d4ef4a"/><stop offset="1" stop-color="#9fbf1f"/></radialGradient><clipPath id="sc"><circle cx="48" cy="48" r="44"/></clipPath></defs><circle cx="48" cy="48" r="44" fill="url(#sg)"/><g clip-path="url(#sc)" fill="#7f9a12" opacity=".75"><circle cx="30" cy="20" r="5.2"/><circle cx="48" cy="16" r="5.2"/><circle cx="64" cy="26" r="5.2"/><circle cx="20" cy="36" r="5.2"/><circle cx="40" cy="34" r="5.2"/><circle cx="58" cy="44" r="5.2"/><circle cx="76" cy="42" r="5.2"/><circle cx="28" cy="54" r="5.2"/><circle cx="46" cy="56" r="5.2"/><circle cx="66" cy="62" r="5.2"/><circle cx="36" cy="72" r="5.2"/><circle cx="54" cy="76" r="5.2"/><circle cx="20" cy="62" r="5.2"/></g><ellipse cx="34" cy="26" rx="14" ry="8" fill="#fff" opacity=".35" transform="rotate(-30 34 26)"/></svg>Bốc thăm chia bảng</div><div class="st-s">Giải Pickleball Tranh Cup Peugeot · THACO AUTO Bắc Ninh</div></div>
  <div class="st-pick"><div class="st-name" id="stName"></div><div class="st-to" id="stTo"></div><div class="st-pl" id="stPl"></div></div>
  <div class="st-groups" id="stGroups"></div>
  <div class="st-ctl" id="stCtl"></div>
