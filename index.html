@@ -163,6 +163,9 @@ header.top{padding-bottom:18px}
 .tb button[aria-current=true]{color:#fff;border-bottom-color:var(--ball)}
 .tb button{color:#9fb5e6}
 @media(max-width:600px){.tb{padding:0 8px}.tb button{padding:0 12px;font-size:15px}}
+.rst{border-color:#e5484d}
+.rst .err{color:#e5484d;font-size:14px;min-height:1.2em}
+form .dgb{background:#e5484d;color:#fff}
 .none{color:#c8d6ea;background:rgba(255,255,255,.07);border-radius:16px;padding:20px}
 .dlg{position:fixed;inset:0;background:rgba(5,15,30,.6);display:grid;place-items:center;padding:16px;z-index:20}
 .dlg[hidden]{display:none}
@@ -216,6 +219,15 @@ header.top{padding-bottom:18px}
   </div>
   <div class="cf" id="cf" aria-label="Lọc theo sân"></div>
   <div class="list" id="list"></div>
+  <section id="resetSec" hidden style="margin-top:32px">
+   <h2>Làm giải mới</h2>
+   <form id="resetForm" class="rst" autocomplete="off">
+    <p class="full" style="margin:0">Xoá <b>toàn bộ</b> trận đấu, tỉ số, bảng xếp hạng và kết quả bốc thăm để bắt đầu giải mới. <b>Không thể hoàn tác.</b></p>
+    <label class="full">Mật khẩu xoá giải<input type="password" id="resetPw" autocomplete="off" required></label>
+    <div class="err full" id="resetErr" role="alert"></div>
+    <button type="submit" class="full dgb" id="resetBtn">Xoá toàn bộ giải</button>
+   </form>
+  </section>
   <section id="addSec" hidden style="margin-top:32px">
    <h2>Thêm trận đấu</h2>
    <form id="addForm">
@@ -350,10 +362,10 @@ function renderBoard(){
   let ref='';
   if(refOn&&canWrite){
     const an=esc(nm(m,'a')),bn=esc(nm(m,'b'));
-    ref=m.status==='done'?`<div class="ref"><div class="small"><button data-act="undo">Hoàn tác pha cuối</button><button data-act="del" class="dg">Xoá trận</button></div></div>`:
+    ref=m.status==='done'?`<div class="ref"><div class="small"><button data-act="undo">Hoàn tác pha cuối</button>${adm()?'<button data-act="del" class="dg">Xoá trận</button>':''}</div></div>`:
     `<div class="ref"><div class="big"><button class="ba" data-act="ra">${an}<br>thắng pha bóng</button><button class="bb" data-act="rb">${bn}<br>thắng pha bóng</button></div>
      <div class="small"><button data-act="undo">Hoàn tác</button><button data-act="so">Đổi giao bóng</button><button data-act="a+">A +1</button><button data-act="b+">B +1</button><button data-act="a-">A −1</button><button data-act="b-">B −1</button>
-     ${m.status==='up'?'<button data-act="start">Bắt đầu trận</button>':'<button data-act="end">Kết thúc trận</button>'}<button data-act="del" class="dg">Xoá</button></div>
+     ${m.status==='up'?'<button data-act="start">Bắt đầu trận</button>':'<button data-act="end">Kết thúc trận</button>'}${adm()?'<button data-act="del" class="dg">Xoá</button>':''}</div>
      <div class="hint">Bấm đội thắng pha bóng: trang tự cộng điểm, chuyển người giao và đổi giao bóng theo luật.</div></div>`;
   }
   b.innerHTML=`<div class="meta">${statusPill(m)}<span>${esc(m.court||'')}</span><span>${esc(m.round||'')}</span><span>${m.dbl?'Đôi hỗn hợp':'Đánh đơn'}</span></div>${scoreRows(m)}${call}${ref}`;
@@ -416,10 +428,12 @@ function renderStand(){
 function render(){
   renderLive();renderBoard();renderStand();renderList();
   $('refBtn').hidden=!canWrite;$('refBtn').textContent=refOn&&canWrite?'Thoát chế độ trọng tài':'Chế độ trọng tài';$('refBtn').setAttribute('aria-pressed',String(refOn&&canWrite));
-  $('addSec').hidden=!(refOn&&canWrite);
-  $('drawSec').hidden=!(refOn&&canWrite);
-  $('tChia').hidden=!(draw||(refOn&&canWrite));
-  $('drawEntry').hidden=!(draw||(refOn&&canWrite));
+  $('addSec').hidden=!adm();
+  $('resetSec').hidden=!adm();
+  $('drawSec').hidden=!adm();
+  $('tChia').hidden=!(draw||adm());
+  $('drawEntry').hidden=!(draw||adm());
+  $('refBtn').textContent=refOn&&canWrite?(adm()?'Thoát (Ban tổ chức)':'Thoát chế độ trọng tài'):'Chế độ trọng tài';
   $('drawInfo').textContent=draw?`Bốc thăm: ${draw.picks.length} đội, ${draw.ng} bảng · đã rút ${draw.shown}/${draw.picks.length}`:'Chưa bốc thăm chia bảng';
 }
 
@@ -477,7 +491,7 @@ function onDraw(d){
 function saveDraw(d){onDraw(d);chain=chain.then(()=>dref.set(d)).catch(()=>toast('Chưa lưu được kết quả bốc thăm'))}
 function renderCtl(){
   const C=$('stCtl');let h='';
-  if(refOn&&canWrite&&draw){
+  if(adm()&&draw){
     if(draw.shown<draw.picks.length)h+='<button class="go" data-s="next">Rút đội tiếp theo</button><button data-s="all">Rút hết</button>';
     else if(!draw.made)h+='<button class="go" data-s="sched">Tạo lịch thi đấu</button>';
     h+=`<button data-s="redo">${confirmRedo?'Bấm lần nữa để bốc lại':'Bốc lại từ đầu'}</button>`;
@@ -487,7 +501,7 @@ function renderCtl(){
 }
 let confirmRedo=false;
 function nextPick(all){
-  if(!draw||spinning||!canWrite||!refOn)return;
+  if(!draw||spinning||!adm())return;
   const s=all?draw.picks.length:Math.min(draw.shown+1,draw.picks.length);if(s===draw.shown)return;
   if(all){shownD=s}
   saveDraw(Object.assign({},draw,{shown:s}));
@@ -544,13 +558,14 @@ $('gf').addEventListener('click',e=>{const b=e.target.closest('[data-g]');if(b){
 $('stand').addEventListener('click',e=>{const b=e.target.closest('[data-id]');if(b)location.hash='m-'+b.dataset.id});
 $('cf').addEventListener('click',e=>{const b=e.target.closest('[data-c]');if(b){cf=b.dataset.c;renderList()}});
 function keepAwake(){try{if(navigator.wakeLock&&!keepAwake.l)navigator.wakeLock.request('screen').then(l=>{keepAwake.l=l;l.addEventListener('release',()=>{keepAwake.l=null})}).catch(()=>{})}catch(e){}}
+const adm=()=>refOn&&!!fbUser&&!!window.ADMIN_EMAIL&&fbUser.email===String(window.ADMIN_EMAIL).toLowerCase();
 let authLoaded=false,fbUser=null,fails=0,lockUntil=0;
 const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
 const lsSet=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
 function setRef(on){refOn=on;lsSet('pbRef',on?'1':'0');render();if(!$('stage').hidden)paintStage()}
 function openDlg(){
   $('pw').value='';$('pwErr').textContent='';$('dlgT').textContent='Đăng nhập trọng tài';
-  $('dlgP').textContent='Nhập mật khẩu trọng tài để nhập điểm và bốc thăm. Nhiều trọng tài có thể đăng nhập cùng lúc.';
+  $('dlgP').textContent='Trọng tài nhập mật khẩu trọng tài để điều khiển trận. Ban tổ chức nhập mật khẩu ban tổ chức để thêm trận, bốc thăm, xoá giải.';
   $('dlg').hidden=false;setTimeout(()=>$('pw').focus(),30);
 }
 $('pwCancel').addEventListener('click',()=>{$('dlg').hidden=true});
@@ -561,8 +576,10 @@ $('pwForm').addEventListener('submit',async e=>{
   if(Date.now()<lockUntil){$('pwErr').textContent='Sai quá nhiều lần, thử lại sau ít giây';return}
   $('pwOk').disabled=true;
   try{
-    await firebase.auth().signInWithEmailAndPassword(window.REF_EMAIL,pw);
-    fails=0;$('dlg').hidden=true;keepAwake();setRef(true);toast('Đã vào chế độ trọng tài');
+    const A=firebase.auth();
+    try{await A.signInWithEmailAndPassword(window.REF_EMAIL,pw)}
+    catch(e1){if(!window.ADMIN_EMAIL||!/wrong-password|invalid-credential|invalid-login|user-not-found/.test(e1&&e1.code||''))throw e1;await A.signInWithEmailAndPassword(window.ADMIN_EMAIL,pw)}
+    fails=0;$('dlg').hidden=true;keepAwake();setRef(true);toast(adm()?'Đã đăng nhập Ban tổ chức':'Đã vào chế độ trọng tài');
   }catch(err){
     const c=err&&err.code||'';
     if(c==='auth/too-many-requests')$('pwErr').textContent='Thử sai quá nhiều lần, đợi vài phút rồi thử lại';
@@ -587,7 +604,7 @@ $('board').addEventListener('click',e=>{
   else if(a==='b+')f=x=>adj(x,'b',1);else if(a==='b-')f=x=>adj(x,'b',-1);
   else if(a==='start')f=x=>{const n=withHist(x);n.status='live';return n};
   else if(a==='end')f=x=>{const n=withHist(x);if(n.sc[0]||n.sc[1]){n.games=(n.games||[]).concat([n.sc]);n.sc=[0,0]}n.status='done';return n};
-  else if(a==='del'){
+  else if(a==='del'){if(!adm())return;
     if(confirmDel[m.id]){delete confirmDel[m.id];matches=matches.filter(x=>x.id!==m.id);sel=null;location.hash='';render();chain=chain.then(()=>col.doc(m.id).delete()).catch(()=>toast('Chưa xoá được'));return}
     confirmDel[m.id]=1;b.textContent='Bấm lần nữa để xoá';setTimeout(()=>{delete confirmDel[m.id];renderBoard()},3000);return;
   }
@@ -596,8 +613,34 @@ $('board').addEventListener('click',e=>{
 $('roundIn').addEventListener('input',e=>{const v=e.target.value,sel=$('addForm').elements.rule;
   if(/bán kết|chung kết|tranh hạng/i.test(v))sel.value='15-1-0';else if(/bảng|tứ kết/i.test(v))sel.value='11-1-0';
   if(!/chung kết/i.test(v))$('addForm').elements.bo.value='1';});
+/* Xoá giải: chỉ lưu bản mã hoá (PBKDF2) của mật khẩu, không lưu mật khẩu gốc. */
+const RESET_SALT='thaco-pickleball-reset',RESET_HASH='ba88a33b722e706020ace718b8bd3af980516c95845c18b42c58f6123b22115f';
+async function pbkdf(pw,salt){
+  const enc=new TextEncoder();const key=await crypto.subtle.importKey('raw',enc.encode(pw),'PBKDF2',false,['deriveBits']);
+  const bits=await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt:enc.encode(salt),iterations:150000},key,256);
+  return [...new Uint8Array(bits)].map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+let resetArmed=false,resetFails=0;
+$('resetForm').addEventListener('submit',async e=>{
+  e.preventDefault();if(!col||!adm())return;const btn=$('resetBtn'),err=$('resetErr');err.textContent='';
+  if(resetFails>=5){err.textContent='Sai quá nhiều lần. Tải lại trang để thử lại.';return}
+  btn.disabled=true;
+  try{
+    if((await pbkdf($('resetPw').value,RESET_SALT))!==RESET_HASH){resetFails++;err.textContent='Sai mật khẩu xoá giải';resetArmed=false;btn.textContent='Xoá toàn bộ giải';return}
+    if(!resetArmed){resetArmed=true;btn.textContent=`Bấm lần nữa để xoá vĩnh viễn ${matches.length} trận`;setTimeout(()=>{resetArmed=false;btn.textContent='Xoá toàn bộ giải'},6000);return}
+    resetArmed=false;btn.textContent='Đang xoá…';
+    const ids=matches.map(m=>m.id);
+    await chain.catch(()=>{});
+    if(typeof db.batch==='function'){
+      for(let i=0;i<ids.length;i+=400){const b=db.batch();ids.slice(i,i+400).forEach(id=>b.delete(col.doc(id)));if(i===0)b.delete(dref);await b.commit()}
+      if(!ids.length)await dref.delete();
+    }else{for(const id of ids)await col.doc(id).delete();await dref.delete()}
+    matches=[];onDraw(null);$('resetPw').value='';location.hash='';render();toast('Đã xoá toàn bộ giải. Có thể bốc thăm giải mới.');
+  }catch(x){err.textContent='Chưa xoá được hết — kiểm tra mạng và thử lại.'}
+  finally{btn.disabled=false;if(!resetArmed)btn.textContent='Xoá toàn bộ giải'}
+});
 $('addForm').addEventListener('submit',e=>{
-  e.preventDefault();if(!col)return;
+  e.preventDefault();if(!col||!adm())return;
   const f=new FormData(e.target);const dbl=f.get('dbl')==='1';const first=f.get('first');
   const n={a:{name:f.get('an').trim(),players:f.get('ap').trim()},b:{name:f.get('bn').trim(),players:f.get('bp').trim()},court:f.get('court').trim(),round:f.get('round').trim(),
     dbl,...ruleOf(f),bestOf:+f.get('bo'),first,srv:first,sn:dbl?2:1,sc:[0,0],games:[],status:'up',hist:[],order:Date.now(),t:Date.now()};

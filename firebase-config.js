@@ -12,3 +12,6 @@ window.FIREBASE_CONFIG = {
 // Email của tài khoản trọng tài tạo trong Firebase Authentication → Users.
 // Phải trùng đúng email đã tạo. Trọng tài chỉ cần nhập mật khẩu.
 window.REF_EMAIL = "trongtai@pickleball-thaco.vn";
+
+// Email tài khoản Ban tổ chức (thêm trận, bốc thăm, xoá giải). Phải trùng email trong firestore.rules.
+window.ADMIN_EMAIL = "admin@pickleball-thaco.vn";
