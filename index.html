@@ -177,7 +177,7 @@ form.rules{grid-template-columns:1fr}
 .rrow{display:grid;grid-template-columns:minmax(0,1fr) repeat(3,minmax(0,1.3fr));gap:10px;align-items:end;padding-bottom:12px;border-bottom:1px solid var(--line)}
 .rrow b{font-size:17px;align-self:center}
 @media(max-width:600px){.rrow{grid-template-columns:repeat(3,minmax(0,1fr))}.rrow b{grid-column:1/-1}.rrow label{font-size:13px}.rrow select{padding:0 6px;font-size:15px}}
-.chr{display:flex;align-items:center;gap:6px}
+.chr{display:flex;align-items:center;gap:6px;flex:none}.chr .pill,.rn{white-space:nowrap}
 .rn{min-height:30px;padding:0 10px;font-size:12px;background:rgba(255,255,255,.14);color:#fff;border-radius:99px}
 .tqh{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-bottom:14px}
 .nextb{background:var(--court);color:#fff}.nextb:disabled{opacity:.55;cursor:default}
@@ -208,6 +208,20 @@ form.rules{grid-template-columns:1fr}
 .gq tr.q td{background:light-dark(#f3f9d6,#1f2d17)}
 @media(max-width:600px){.pod{gap:6px}.pd{padding:12px 6px}.pd.p1{min-height:200px}.ko{grid-template-columns:1fr}}
 .hint{font-size:13px;color:var(--mut)}.hint summary{cursor:pointer;font-weight:600;min-height:28px}.hint p{margin:6px 0 0}.hint code{font-size:13px;background:light-dark(#eef2fa,#16275a);padding:1px 5px;border-radius:5px}
+.catbar{background:light-dark(#eef2fb,#0a1a4c);border-bottom:1px solid var(--line)}
+.cb{display:flex;gap:8px;overflow-x:auto;padding:10px max(5vw,16px);scrollbar-width:none;align-items:center}
+.cb small{flex:none;color:var(--mut);font-weight:600}
+.cb button{flex:none;min-height:38px;background:var(--card);color:var(--ink);border:1px solid var(--line);font-size:14px;border-radius:99px}
+.cb button[aria-pressed=true]{background:var(--court);color:#fff;border-color:var(--court)}
+@media(max-width:600px){.cb{padding:8px 12px}}
+form.cats{grid-template-columns:1fr}
+.crow{display:grid;grid-template-columns:minmax(0,2.4fr) repeat(3,minmax(0,1fr)) auto;gap:8px;align-items:end;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.crow .x{background:transparent;color:#e5484d;border:1px solid rgba(229,72,77,.45);padding:0 12px}
+.crow .x:disabled{opacity:.35}
+@media(max-width:700px){.crow{grid-template-columns:repeat(3,minmax(0,1fr))}.crow label:first-child{grid-column:1/-1}.crow .x{grid-column:1/-1}}
+.catacts{display:flex;flex-wrap:wrap;gap:10px}.catacts button{flex:1 1 180px}
+.ctag{display:inline-block;background:rgba(212,239,74,.16);color:var(--ball);border-radius:6px;padding:0 6px;font-weight:700;margin-right:6px}
+.cct{display:block;font:600 12px/1.3 "Be Vietnam Pro",sans-serif;color:var(--ball);margin-top:4px}
 .none{color:#c8d6ea;background:rgba(255,255,255,.07);border-radius:16px;padding:20px}
 .dlg{position:fixed;inset:0;background:rgba(5,15,30,.6);display:grid;place-items:center;padding:16px;z-index:20}
 .dlg[hidden]{display:none}
@@ -231,7 +245,7 @@ form.rules{grid-template-columns:1fr}
 <header class="top band">
  <div class="wrap">
   <div class="hd">
-   <div class="brand"><svg class="logo" aria-hidden="true" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="hg" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#f4ff9c"/><stop offset=".55" stop-color="#d4ef4a"/><stop offset="1" stop-color="#9fbf1f"/></radialGradient><clipPath id="hc"><circle cx="48" cy="48" r="44"/></clipPath></defs><circle cx="48" cy="48" r="44" fill="url(#hg)"/><g clip-path="url(#hc)" fill="#7f9a12" opacity=".75"><circle cx="30" cy="20" r="5.2"/><circle cx="48" cy="16" r="5.2"/><circle cx="64" cy="26" r="5.2"/><circle cx="20" cy="36" r="5.2"/><circle cx="40" cy="34" r="5.2"/><circle cx="58" cy="44" r="5.2"/><circle cx="76" cy="42" r="5.2"/><circle cx="28" cy="54" r="5.2"/><circle cx="46" cy="56" r="5.2"/><circle cx="66" cy="62" r="5.2"/><circle cx="36" cy="72" r="5.2"/><circle cx="54" cy="76" r="5.2"/><circle cx="20" cy="62" r="5.2"/></g><ellipse cx="34" cy="26" rx="14" ry="8" fill="#fff" opacity=".35" transform="rotate(-30 34 26)"/></svg><div><h1>Giải Pickleball<span class="cup">Tranh Cup Peugeot · THACO AUTO Bắc Ninh</span></h1><div class="info"><span class="date">28.11.2026 · Thứ 7 · từ 7h30</span><span>Sân Pickleball Kinh Bắc, Bắc Ninh</span><span class="mix">Đôi hỗn hợp</span></div><div class="sub" id="status">Đang kết nối tỉ số trực tuyến…</div></div></div>
+   <div class="brand"><svg class="logo" aria-hidden="true" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="hg" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#f4ff9c"/><stop offset=".55" stop-color="#d4ef4a"/><stop offset="1" stop-color="#9fbf1f"/></radialGradient><clipPath id="hc"><circle cx="48" cy="48" r="44"/></clipPath></defs><circle cx="48" cy="48" r="44" fill="url(#hg)"/><g clip-path="url(#hc)" fill="#7f9a12" opacity=".75"><circle cx="30" cy="20" r="5.2"/><circle cx="48" cy="16" r="5.2"/><circle cx="64" cy="26" r="5.2"/><circle cx="20" cy="36" r="5.2"/><circle cx="40" cy="34" r="5.2"/><circle cx="58" cy="44" r="5.2"/><circle cx="76" cy="42" r="5.2"/><circle cx="28" cy="54" r="5.2"/><circle cx="46" cy="56" r="5.2"/><circle cx="66" cy="62" r="5.2"/><circle cx="36" cy="72" r="5.2"/><circle cx="54" cy="76" r="5.2"/><circle cx="20" cy="62" r="5.2"/></g><ellipse cx="34" cy="26" rx="14" ry="8" fill="#fff" opacity=".35" transform="rotate(-30 34 26)"/></svg><div><h1>Giải Pickleball<span class="cup">Tranh Cup Peugeot · THACO AUTO Bắc Ninh</span></h1><div class="info"><span class="date">28.11.2026 · Thứ 7 · từ 7h30</span><span>Sân Pickleball Kinh Bắc, Bắc Ninh</span><span class="mix" id="mixPill">Đôi hỗn hợp</span></div><div class="sub" id="status">Đang kết nối tỉ số trực tuyến…</div></div></div>
    <div class="hbtns"><button class="tog" id="refBtn" aria-pressed="false" hidden>Chế độ trọng tài</button></div>
   </div>
   </div>
@@ -239,6 +253,7 @@ form.rules{grid-template-columns:1fr}
 <nav class="tabbar" id="tabbar" aria-label="Mục"><div class="wrap tb">
  <button data-t="san">Livestream</button><button data-t="xep-hang">Xếp hạng</button><button data-t="tong-quan">Tổng quan</button><button data-t="lich-dau">Lịch đấu</button><button data-t="chia-bang" id="tChia" hidden>Bốc thăm</button>
 </div></nav>
+<div class="catbar" id="catbar" hidden><div class="wrap cb" id="cbIn" aria-label="Nội dung thi đấu"></div></div>
 <section class="top band" id="pSan">
  <div class="wrap">
   <button class="back" id="backBtn" hidden>← Quay lại</button>
@@ -269,7 +284,7 @@ form.rules{grid-template-columns:1fr}
   <section id="resetSec" hidden style="margin-top:32px">
    <h2>Làm giải mới</h2>
    <form id="resetForm" class="rst" autocomplete="off">
-    <p class="full" style="margin:0">Xoá <b>toàn bộ</b> trận đấu, tỉ số, bảng xếp hạng và kết quả bốc thăm để bắt đầu giải mới. <b>Không thể hoàn tác.</b></p>
+    <p class="full" style="margin:0">Xoá <b>toàn bộ</b> trận đấu, tỉ số, bảng xếp hạng và kết quả bốc thăm của nội dung <b id="resetCat"></b> để làm lại. Các nội dung khác giữ nguyên. <b>Không thể hoàn tác.</b></p>
     <label class="full">Mật khẩu xoá giải<input type="password" id="resetPw" autocomplete="off" required></label>
     <div class="err full" id="resetErr" role="alert"></div>
     <button type="submit" class="full dgb" id="resetBtn">Xoá toàn bộ giải</button>
@@ -295,6 +310,13 @@ form.rules{grid-template-columns:1fr}
   </div>
   <div id="pChia">
   <div class="entry" id="drawEntry" hidden><b id="drawInfo">Bốc thăm chia bảng</b><button id="openStage">Mở màn hình bốc thăm</button><button id="clearDraw" class="clr" hidden>Xoá kết quả bốc thăm</button></div>
+  <section id="catSec" hidden style="margin-top:8px">
+   <h2>Nội dung thi đấu</h2>
+   <form id="catForm" class="cats" autocomplete="off"><div id="catRows"></div>
+    <div class="catacts"><button type="button" id="catAdd" class="simb">+ Thêm nội dung</button><button type="submit">Lưu nội dung</button></div>
+    <p class="note" style="margin:0">Mỗi nội dung có bốc thăm, bảng đấu, xếp hạng và giải thưởng riêng. Chỉ xoá được nội dung chưa có trận nào.</p>
+   </form>
+  </section>
   <section id="rulesSec" hidden style="margin-top:32px">
    <h2>Luật thi đấu</h2>
    <form id="rulesForm" class="rules"><div class="rrow"><b>Vòng bảng</b><label>Chạm<select name="group_to"><option>11</option><option>15</option><option>21</option></select></label><label>Cách<select name="group_wb"><option value="1">Không</option><option value="2">2 điểm</option></select></label><label>Số trận<select name="group_bo"><option value="1">1 trận</option><option value="3">3 thắng 2</option></select></label></div><div class="rrow"><b>Tứ kết</b><label>Chạm<select name="qf_to"><option>11</option><option>15</option><option>21</option></select></label><label>Cách<select name="qf_wb"><option value="1">Không</option><option value="2">2 điểm</option></select></label><label>Số trận<select name="qf_bo"><option value="1">1 trận</option><option value="3">3 thắng 2</option></select></label></div><div class="rrow"><b>Bán kết</b><label>Chạm<select name="semi_to"><option>11</option><option>15</option><option>21</option></select></label><label>Cách<select name="semi_wb"><option value="1">Không</option><option value="2">2 điểm</option></select></label><label>Số trận<select name="semi_bo"><option value="1">1 trận</option><option value="3">3 thắng 2</option></select></label></div><div class="rrow"><b>Chung kết</b><label>Chạm<select name="final_to"><option>11</option><option>15</option><option>21</option></select></label><label>Cách<select name="final_wb"><option value="1">Không</option><option value="2">2 điểm</option></select></label><label>Số trận<select name="final_bo"><option value="1">1 trận</option><option value="3">3 thắng 2</option></select></label></div><button type="submit">Lưu luật thi đấu</button>
@@ -307,7 +329,7 @@ form.rules{grid-template-columns:1fr}
     <label class="full">Danh sách cặp VĐV (mỗi dòng 1 cặp)
      <textarea name="teams" id="teamsTxt" required placeholder="*KIA - MAZDA | Minh Tuấn / Hoàng Long&#10;*Peugeot | Quang Huy / Đức Anh&#10;BMW - MINI | Thành Đạt / Minh Khôi&#10;Dịch vụ | Văn Hải / Thu Trang"></textarea></label>
     <details class="full hint"><summary>Cách xếp sẵn vào bảng / hạt giống</summary><p>Ghi chữ bảng trong ngoặc vuông ở đầu dòng để xếp sẵn: <code>[A] Nguyễn Văn A / Trần Văn B</code>. Thêm dấu <code>*</code> ở đầu dòng cho hạt giống (mỗi bảng 1). Dòng không ghi gì sẽ bốc ngẫu nhiên.</p></details><label>Số bảng<select name="ng"><option>1</option><option>2</option><option>3</option><option>4</option><option>6</option><option selected>8</option></select></label>
-    <label>Số sân<input name="courts" type="number" min="1" max="20" value="2"></label>
+    <label>Số sân dùng<input name="courts" type="number" min="1" max="20" value="8"></label><label>Bắt đầu từ sân số<input name="c0" type="number" min="1" max="30" value="1"></label>
     <label>Nội dung<select name="dbl"><option value="1">Đôi hỗn hợp</option><option value="0">Đánh đơn</option></select></label>
     
     <p class="note full" style="margin:0">Các trận vòng bảng dùng luật <b>Vòng bảng</b> ở mục Luật thi đấu phía trên.</p>
@@ -319,7 +341,7 @@ form.rules{grid-template-columns:1fr}
  </div>
 </main>
 <section id="stage" hidden aria-live="polite">
- <div class="st-top"><div class="st-t" style="display:flex;align-items:center;gap:16px"><svg aria-hidden="true" style="width:1em;height:1em;flex:none" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="sg" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#f4ff9c"/><stop offset=".55" stop-color="#d4ef4a"/><stop offset="1" stop-color="#9fbf1f"/></radialGradient><clipPath id="sc"><circle cx="48" cy="48" r="44"/></clipPath></defs><circle cx="48" cy="48" r="44" fill="url(#sg)"/><g clip-path="url(#sc)" fill="#7f9a12" opacity=".75"><circle cx="30" cy="20" r="5.2"/><circle cx="48" cy="16" r="5.2"/><circle cx="64" cy="26" r="5.2"/><circle cx="20" cy="36" r="5.2"/><circle cx="40" cy="34" r="5.2"/><circle cx="58" cy="44" r="5.2"/><circle cx="76" cy="42" r="5.2"/><circle cx="28" cy="54" r="5.2"/><circle cx="46" cy="56" r="5.2"/><circle cx="66" cy="62" r="5.2"/><circle cx="36" cy="72" r="5.2"/><circle cx="54" cy="76" r="5.2"/><circle cx="20" cy="62" r="5.2"/></g><ellipse cx="34" cy="26" rx="14" ry="8" fill="#fff" opacity=".35" transform="rotate(-30 34 26)"/></svg>Bốc thăm chia bảng</div><div class="st-s">Giải Pickleball Tranh Cup Peugeot · THACO AUTO Bắc Ninh</div></div>
+ <div class="st-top"><div class="st-t" style="display:flex;align-items:center;gap:16px"><svg aria-hidden="true" style="width:1em;height:1em;flex:none" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="sg" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#f4ff9c"/><stop offset=".55" stop-color="#d4ef4a"/><stop offset="1" stop-color="#9fbf1f"/></radialGradient><clipPath id="sc"><circle cx="48" cy="48" r="44"/></clipPath></defs><circle cx="48" cy="48" r="44" fill="url(#sg)"/><g clip-path="url(#sc)" fill="#7f9a12" opacity=".75"><circle cx="30" cy="20" r="5.2"/><circle cx="48" cy="16" r="5.2"/><circle cx="64" cy="26" r="5.2"/><circle cx="20" cy="36" r="5.2"/><circle cx="40" cy="34" r="5.2"/><circle cx="58" cy="44" r="5.2"/><circle cx="76" cy="42" r="5.2"/><circle cx="28" cy="54" r="5.2"/><circle cx="46" cy="56" r="5.2"/><circle cx="66" cy="62" r="5.2"/><circle cx="36" cy="72" r="5.2"/><circle cx="54" cy="76" r="5.2"/><circle cx="20" cy="62" r="5.2"/></g><ellipse cx="34" cy="26" rx="14" ry="8" fill="#fff" opacity=".35" transform="rotate(-30 34 26)"/></svg>Bốc thăm chia bảng</div><div class="st-s" id="stSub">Giải Pickleball Tranh Cup Peugeot · THACO AUTO Bắc Ninh</div></div>
  <div class="st-pick"><div class="st-name" id="stName"></div><div class="st-to" id="stTo"></div><div class="st-pl" id="stPl"></div></div>
  <div class="st-groups" id="stGroups"></div>
  <div class="st-ctl" id="stCtl"></div>
@@ -431,14 +453,14 @@ function renderBoard(){
      ${m.status==='up'?'<button data-act="start">Bắt đầu trận</button>':'<button data-act="end">Kết thúc trận</button>'}${adm()?'<button data-act="court">Đổi sân</button><button data-act="del" class="dg">Xoá</button>':''}</div>
      <div class="hint">Bấm đội thắng pha bóng: trang tự cộng điểm, chuyển người giao và đổi giao bóng theo luật.</div></div>`;
   }
-  b.innerHTML=`<div class="meta">${statusPill(m)}<span>${esc(m.court||'')}</span><span>${esc(m.round||'')}</span><span>${m.dbl?'Đôi hỗn hợp':'Đánh đơn'}</span></div>${scoreRows(m)}${call}${ref}`;
+  b.innerHTML=`<div class="meta">${statusPill(m)}<span>${esc(m.court||'')}</span><span>${esc(m.round||'')}</span><span>${esc(catName(catOf(m)))}</span></div>${scoreRows(m)}${call}${ref}`;
 }
 function renderList(){
   const L=$('list');
   const order={live:0,up:1,done:2};
-  const cs=[...new Set(matches.map(cName))].sort(byCourt);if(cf!=='all'&&!cs.includes(cf))cf='all';
+  const cs=[...new Set(matches.filter(inCat).map(cName))].sort(byCourt);if(cf!=='all'&&!cs.includes(cf))cf='all';
   $('cf').innerHTML=cs.length>1?['all',...cs].map(c=>`<button data-c="${esc(c)}" aria-pressed="${c===cf}">${c==='all'?'Tất cả sân':esc(c)}</button>`).join(''):'';
-  const arr=matches.filter(m=>(filter==='all'||m.status===filter)&&(cf==='all'||cName(m)===cf)).sort((x,y)=>(order[x.status]-order[y.status])||((x.order??0)-(y.order??0)));
+  const arr=matches.filter(m=>inCat(m)&&(filter==='all'||m.status===filter)&&(cf==='all'||cName(m)===cf)).sort((x,y)=>(order[x.status]-order[y.status])||((x.order??0)-(y.order??0)));
   if(!got){L.innerHTML='';return}
   if(!arr.length){L.innerHTML=`<p style="color:var(--mut)">Không có trận nào ở mục này.</p>`;return}
   L.innerHTML=arr.map(m=>{const w=wins(m),s=m.sc||[0,0],done=m.status==='done';
@@ -450,7 +472,7 @@ const byCourt=(a,b)=>a.localeCompare(b,'vi',{numeric:true});
 function liveCard(m){
   const w=wins(m),s=m.sc||[0,0],si=ix(m.srv);
   const row=t=>`<div class="lr"><i style="background:var(--${t})"></i><span class="ln">${esc(nm(m,t))}${m.srv===t?ball:''}</span>${m.bestOf>1?`<span class="lg">${w[ix(t)]}</span>`:'<span></span>'}<b class="lp">${esc(s[ix(t)])}</b></div>`;
-  return `<button class="lc" data-id="${esc(m.id)}" aria-label="Xem chi tiết trận ${esc(nm(m,'a'))} gặp ${esc(nm(m,'b'))}"><div class="lm"><span>${esc(m.round||'')}</span></div>${row('a')}${row('b')}<div class="lf"><span>Trận ${esc((m.games||[]).length+1)} · ${esc(ruleTxt(m))}</span><span>${esc(s[si])}-${esc(s[1-si])}${m.dbl?'-'+esc(m.sn):''}</span></div></button>`;
+  return `<button class="lc" data-id="${esc(m.id)}" aria-label="Xem chi tiết trận ${esc(nm(m,'a'))} gặp ${esc(nm(m,'b'))}"><div class="lm"><span>${CATS.length>1?`<span class="ctag">${esc(catName(catOf(m)))}</span>`:''}${esc(m.round||'')}</span></div>${row('a')}${row('b')}<div class="lf"><span>Trận ${esc((m.games||[]).length+1)} · ${esc(ruleTxt(m))}</span><span>${esc(s[si])}-${esc(s[1-si])}${m.dbl?'-'+esc(m.sn):''}</span></div></button>`;
 }
 function renderLive(){
   const G=$('lgrid');if(!got)return;
@@ -461,7 +483,8 @@ function renderLive(){
   if(!courts.length){G.innerHTML='<div class="none">Chưa có trận nào đang đánh hoặc sắp đấu.</div>';return}
   G.innerHTML=courts.map(c=>{
     const ms=by.get(c).sort((x,y)=>(x.order??0)-(y.order??0));const live=ms.filter(m=>m.status==='live'),up=ms.filter(m=>m.status==='up');
-    return `<section class="cc"><div class="ch"><h3>${esc(c)}</h3><span class="chr">${live.length?'<span class="pill live">Đang đánh</span>':'<span class="pill up">Sân trống</span>'}${adm()?`<button class="rn" data-rn="${esc(c)}">Đổi tên</button>`:''}</span></div>${live.map(liveCard).join('')}`+
+    const cn=CATS.length>1?[...new Set(ms.map(m=>catName(catOf(m))))]:[];
+    return `<section class="cc"><div class="ch"><h3>${esc(c)}${cn.length?`<small class="cct">${cn.map(esc).join(' · ')}</small>`:''}</h3><span class="chr">${live.length?'<span class="pill live">Đang đánh</span>':'<span class="pill up">Sân trống</span>'}${adm()?`<button class="rn" data-rn="${esc(c)}">Đổi tên</button>`:''}</span></div>${live.map(liveCard).join('')}`+
     (up.length?`<div class="nx"><div class="nxh">Tiếp theo</div>${up.slice(0,3).map(m=>`<button class="nr" data-id="${esc(m.id)}"><span>${esc(nm(m,'a'))}</span><i>gặp</i><span>${esc(nm(m,'b'))}</span></button>`).join('')}${up.length>3?`<div class="nxh">+${up.length-3} trận nữa</div>`:''}</div>`:'')+'</section>';
   }).join('');
 }
@@ -471,7 +494,7 @@ const tKey=(m,t)=>((m[t]?.name||'').trim()||(m[t]?.players||'').trim()).toLowerC
 function winnerOf(m){if(m.status!=='done')return null;const w=wins(m);return w[0]===w[1]?null:(w[0]>w[1]?'a':'b')}
 function renderStand(){
   const sec=$('standSec');if(!got){sec.hidden=true;return}
-  const G=new Map();matches.forEach(m=>{const g=grpOf(m);if(!g)return;if(!G.has(g))G.set(g,[]);G.get(g).push(m)});
+  const G=new Map();matches.filter(inCat).forEach(m=>{const g=grpOf(m);if(!g)return;if(!G.has(g))G.set(g,[]);G.get(g).push(m)});
   const gs=[...G.keys()].sort(byCourt);sec.hidden=!gs.length;$('noStand').hidden=!!gs.length;if(!gs.length)return;
   if(!gs.includes(gsel))gsel=gs[0];
   $('gf').innerHTML=gs.map(g=>`<button data-g="${esc(g)}" aria-pressed="${g===gsel}">Bảng ${esc(g)}</button>`).join('');
@@ -495,6 +518,11 @@ function render(){
   $('resetSec').hidden=!adm();
   $('drawSec').hidden=!adm();
   $('rulesSec').hidden=!adm();
+  $('catSec').hidden=!adm();
+  {const t=(location.hash.slice(1)||'san');$('catbar').hidden=CATS.length<2||t==='san'||t.startsWith('m-')||t==='boc-tham';}
+  $('mixPill').textContent=CATS.length>1?(location.hash.slice(1)&&location.hash!=='#san'&&!location.hash.startsWith('#m-')?curC().name:CATS.length+' nội dung'):curC().name;
+  $('resetCat').textContent=curC().name;$('stSub').textContent=curC().name+' · Giải Pickleball Tranh Cup Peugeot';
+  renderCatbar();
   $('tChia').hidden=!(draw||adm());
   $('drawEntry').hidden=!(draw||adm());
   $('clearDraw').hidden=!(draw&&adm());
@@ -503,6 +531,13 @@ function render(){
 }
 
 /* ---------- Bốc thăm ---------- */
+let CATS=[{id:'c1',name:'Đôi hỗn hợp',p1:'10 triệu',p2:'5 triệu',p3:'3 triệu'}],catsRef=null,curCat='c1',drawUnsub=null;
+try{const c=localStorage.getItem('pbCat');if(c)curCat=c}catch(e){}
+const catOf=m=>m.cat||'c1';
+const catName=id=>(CATS.find(c=>c.id===id)||{}).name||'Nội dung';
+const curC=()=>CATS.find(c=>c.id===curCat)||CATS[0];
+const inCat=m=>catOf(m)===curCat;
+const drawPath=id=>id==='c1'?'meta/draw':'draws/'+id;
 let dref=null,draw=null,drawAt=null,shownD=0,spinning=false,firstDraw=true;
 const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const rnd=n=>{const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]%n};
@@ -597,7 +632,7 @@ function makeSchedule(){
   else gs.forEach((g,k)=>alloc[k].push(k%C+1));
   const ptr=gs.map(()=>0);list.forEach(x=>{x.court=alloc[x.k][ptr[x.k]++%alloc[x.k].length]});
   const base=Date.now();
-  list.forEach((x,i)=>{const n={a:{name:x.a.name,players:x.a.players||''},b:{name:x.b.name,players:x.b.players||''},court:'Sân '+x.court,round:x.round,dbl:o.dbl,stage:'group',to:o.to,winBy:o.winBy||2,cap:o.cap||0,bestOf:o.bo,first:'a',srv:'a',sn:o.dbl?2:1,sc:[0,0],games:[],status:'up',hist:[],order:base+i,t:base};const ref=col.doc();chain=chain.then(()=>ref.set(n))});
+  list.forEach((x,i)=>{const n={a:{name:x.a.name,players:x.a.players||''},b:{name:x.b.name,players:x.b.players||''},court:'Sân '+(x.court+(o.c0||1)-1),cat:draw.cat||curCat,round:x.round,dbl:o.dbl,stage:'group',to:o.to,winBy:o.winBy||2,cap:o.cap||0,bestOf:o.bo,first:'a',srv:'a',sn:o.dbl?2:1,sc:[0,0],games:[],status:'up',hist:[],order:base+i,t:base};const ref=col.doc();chain=chain.then(()=>ref.set(n))});
   saveDraw(Object.assign({},draw,{made:true}));
   chain=chain.then(()=>toast(`Đã tạo ${list.length} trận`));
 }
@@ -640,7 +675,7 @@ $('drawForm').addEventListener('submit',e=>{
    const full=Object.entries(cnt).find(([k,v])=>v>capN);if(full)return toast(`Bảng ${full[0]} xếp sẵn ${full[1]} cặp, quá ${capN} cặp/bảng`)}
   if(new Set(teams.map(t=>t.name.toLowerCase())).size!==teams.length)return toast('Có tên đội bị trùng');
   shownD=0;
-  saveDraw({picks:makePicks(teams,g),ng:g,shown:0,at:Date.now(),made:false,opts:{dbl:f.get('dbl')==='1',...ruleFor('group'),courts:Math.max(1,Math.min(20,+f.get('courts')||1))}});
+  saveDraw({cat:curCat,picks:makePicks(teams,g),ng:g,shown:0,at:Date.now(),made:false,opts:{c0:Math.max(1,+f.get('c0')||1),...{dbl:f.get('dbl')==='1',...ruleFor('group'),courts:Math.max(1,Math.min(20,+f.get('courts')||1))}}});
   location.hash='boc-tham';
 });
 
@@ -736,15 +771,15 @@ $('resetForm').addEventListener('submit',async e=>{
   btn.disabled=true;
   try{
     if((await pbkdf($('resetPw').value,RESET_SALT))!==RESET_HASH){resetFails++;err.textContent='Sai mật khẩu xoá giải';resetArmed=false;btn.textContent='Xoá toàn bộ giải';return}
-    if(!resetArmed){resetArmed=true;btn.textContent=`Bấm lần nữa để xoá vĩnh viễn ${matches.length} trận`;setTimeout(()=>{resetArmed=false;btn.textContent='Xoá toàn bộ giải'},6000);return}
+    if(!resetArmed){resetArmed=true;btn.textContent=`Bấm lần nữa để xoá vĩnh viễn ${matches.filter(inCat).length} trận`;setTimeout(()=>{resetArmed=false;btn.textContent='Xoá toàn bộ giải'},6000);return}
     resetArmed=false;btn.textContent='Đang xoá…';
-    const ids=matches.map(m=>m.id);
+    const ids=matches.filter(inCat).map(m=>m.id);
     await chain.catch(()=>{});
     if(typeof db.batch==='function'){
       for(let i=0;i<ids.length;i+=400){const b=db.batch();ids.slice(i,i+400).forEach(id=>b.delete(col.doc(id)));if(i===0)b.delete(dref);await b.commit()}
       if(!ids.length)await dref.delete();
     }else{for(const id of ids)await col.doc(id).delete();await dref.delete()}
-    matches=[];onDraw(null);$('resetPw').value='';location.hash='';render();toast('Đã xoá toàn bộ giải. Có thể bốc thăm giải mới.');
+    matches=matches.filter(m=>!inCat(m));onDraw(null);$('resetPw').value='';location.hash='';render();toast('Đã xoá toàn bộ giải. Có thể bốc thăm giải mới.');
   }catch(x){err.textContent='Chưa xoá được hết — kiểm tra mạng và thử lại.'}
   finally{btn.disabled=false;if(!resetArmed)btn.textContent='Xoá toàn bộ giải'}
 });
@@ -816,12 +851,12 @@ function nextPlan(L){
 function renderTong(){
   const box=$('tong');if(!box||$('pTong').hidden||!got)return;
   $('simBtn').setAttribute('aria-pressed',String(simOn));$('simBtn').textContent=simOn?'Tắt xem thử':'Xem thử khi đủ kết quả';
-  let L=simOn?matches.map(m=>m.status==='done'?m:simulate(m)):matches.slice();
+  const MC=matches.filter(inCat);let L=simOn?MC.map(m=>m.status==='done'?m:simulate(m)):MC.slice();
   if(simOn){for(let k=0;k<4;k++){const P=nextPlan(L);if(!P.list)break;L=L.concat(P.list.map(([a,b,rd,st])=>simulate(mkMatch(a,b,rd,st||P.stage))))}}
   const G=new Map();L.forEach(m=>{const g=grpOf(m);if(!g)return;if(!G.has(g))G.set(g,[]);G.get(g).push(m)});
   const gs=[...G.keys()].sort(byCourt),tables=gs.map(g=>[g,rowsOf(G.get(g))]);
   const qf=L.filter(isQF).sort(byRound),semis=L.filter(isSemi).sort(byRound),fin=L.find(isFinal),third=L.find(isThird);
-  const plan=simOn?null:nextPlan(matches);
+  const plan=simOn?null:nextPlan(MC);
   const nb=$('nextBtn');
   nb.hidden=!(adm()&&!simOn&&plan&&!plan.end);
   if(!nb.hidden){nb.disabled=!plan.list;nb.textContent=plan.list?'Tạo vòng tiếp theo: '+STAGES[plan.stage]+(plan.stage==='final'?' + Tranh hạng ba':''):plan.err}
@@ -832,26 +867,51 @@ function renderTong(){
   const pd=(c,n,lab,prize,names)=>`<div class="pd ${c}"><div class="pp">${n}</div><div class="pl">${lab}</div><div class="pn">${names||'<span>Chờ kết quả</span>'}</div><div class="pz">${prize}</div></div>`;
   const hasQF=qf.length||tables.length===8;
   const qfL=['Tứ kết 1 · Nhất A – Nhất B','Tứ kết 2 · Nhất C – Nhất D','Tứ kết 3 · Nhất E – Nhất F','Tứ kết 4 · Nhất G – Nhất H'];
-  box.innerHTML=`<div class="pod">${pd('p2',2,'GIẢI NHÌ','5 triệu',fw?side(fin,oth(fw)):'')}${pd('p1',1,'GIẢI NHẤT','10 triệu',fw?side(fin,fw):'')}${pd('p3',3,'GIẢI BA','3 triệu',p3)}</div>
+  box.innerHTML=`<div class="pod">${pd('p2',2,'GIẢI NHÌ',esc(curC().p2||''),fw?side(fin,oth(fw)):'')}${pd('p1',1,'GIẢI NHẤT',esc(curC().p1||''),fw?side(fin,fw):'')}${pd('p3',3,'GIẢI BA',esc(curC().p3||''),p3)}</div>
   <h2>Vòng loại trực tiếp</h2>
   <div class="ko${hasQF?' k3':''}">${hasQF?`<div class="col">${[0,1,2,3].map(i=>koBox(qf[i],qfL[i])).join('')}</div>`:''}<div class="col">${koBox(semis[0],hasQF?'Bán kết 1 · Thắng TK1 – TK2':'Bán kết 1')}${koBox(semis[1],hasQF?'Bán kết 2 · Thắng TK3 – TK4':'Bán kết 2')}</div><div class="col">${koBox(fin,'Chung kết')}${koBox(third,'Tranh hạng ba')}</div></div>
   <h2>Vòng bảng</h2>
   ${tables.length?`<div class="gq">${tables.map(([g,rows])=>`<div class="sc"><h3>Bảng ${esc(g)}</h3><table class="st"><thead><tr><th>#</th><th class="l">Đội</th><th>T-B</th><th>HS</th></tr></thead><tbody>${rows.map((x,i)=>`<tr class="${i===0&&x.p?'q':''}"><td><span class="rk">${i+1}</span></td><td class="l">${esc(x.n)}</td><td>${x.w}-${x.l}</td><td>${x.pf-x.pa>0?'+':''}${x.pf-x.pa}</td></tr>`).join('')}</tbody></table></div>`).join('')}</div>`:'<p class="note">Chưa có bảng đấu.</p>'}`;
 }
 $('nextBtn').addEventListener('click',()=>{
-  if(!adm()||!col)return;const P=nextPlan(matches);if(!P.list)return toast(P.err);
+  if(!adm()||!col)return;const P=nextPlan(matches.filter(inCat));if(!P.list)return toast(P.err);
   const base=Date.now();
-  P.list.forEach(([A,B,rd,st],i)=>{const stg=st||P.stage,R=ruleFor(stg),n={a:{name:A.name||'',players:A.players||''},b:{name:B.name||'',players:B.players||''},court:'Sân '+(i+1),round:rd,stage:stg,dbl:true,to:R.to,winBy:R.winBy,cap:0,bestOf:R.bo,first:'a',srv:'a',sn:2,sc:[0,0],games:[],status:'up',hist:[],order:base+i,t:base};
+  P.list.forEach(([A,B,rd,st],i)=>{const stg=st||P.stage,R=ruleFor(stg),n={a:{name:A.name||'',players:A.players||''},b:{name:B.name||'',players:B.players||''},court:'Sân '+(i+1),round:rd,stage:stg,cat:curCat,dbl:true,to:R.to,winBy:R.winBy,cap:0,bestOf:R.bo,first:'a',srv:'a',sn:2,sc:[0,0],games:[],status:'up',hist:[],order:base+i,t:base};
     const ref=col.doc();matches.push(Object.assign({id:ref.id},n));chain=chain.then(()=>ref.set(n))});
   chain=chain.then(()=>toast(`Đã tạo ${P.list.length} trận ${STAGES[P.stage]}`)).catch(()=>toast('Chưa tạo được, thử lại'));render();
 });
 $('simBtn').addEventListener('click',()=>{simOn=!simOn;renderTong()});
 $('tong').addEventListener('click',e=>{const b=e.target.closest('[data-id]');if(b)location.hash='m-'+b.dataset.id});
+/* ---------- Nội dung thi đấu ---------- */
+function subDraw(){if(!db)return;if(drawUnsub)try{drawUnsub()}catch(e){}firstDraw=true;dref=db.doc(drawPath(curCat));drawUnsub=dref.onSnapshot(s=>onDraw(s.exists?s.data():null),()=>{})}
+function setCat(id){if(id===curCat||!CATS.some(c=>c.id===id))return;curCat=id;try{localStorage.setItem('pbCat',id)}catch(e){}cf='all';simOn=false;draw=null;shownD=0;subDraw();render()}
+function renderCatbar(){$('cbIn').innerHTML='<small>Nội dung:</small>'+CATS.map(c=>`<button data-cat="${esc(c.id)}" aria-pressed="${c.id===curCat}">${esc(c.name)}</button>`).join('')}
+$('cbIn').addEventListener('click',e=>{const b=e.target.closest('[data-cat]');if(b)setCat(b.dataset.cat)});
+let catDraft=null;
+function onCats(d){
+  if(d&&Array.isArray(d.list)&&d.list.length)CATS=d.list.filter(c=>c&&c.id).map(c=>({id:String(c.id).slice(0,20),name:String(c.name||'Nội dung').slice(0,60),p1:String(c.p1||'').slice(0,20),p2:String(c.p2||'').slice(0,20),p3:String(c.p3||'').slice(0,20)}));
+  if(!CATS.some(c=>c.id===curCat)){curCat=CATS[0].id;subDraw()}
+  if(!$('catForm').contains(document.activeElement)){catDraft=null;paintCats()}render();
+}
+function paintCats(){
+  const list=catDraft||CATS;
+  $('catRows').innerHTML=list.map((c,i)=>{const used=matches.some(m=>catOf(m)===c.id);
+    return `<div class="crow" data-i="${i}"><label>Tên nội dung<input name="n" value="${esc(c.name)}" maxlength="60" required></label><label>Giải Nhất<input name="p1" value="${esc(c.p1||'')}" maxlength="20"></label><label>Giải Nhì<input name="p2" value="${esc(c.p2||'')}" maxlength="20"></label><label>Giải Ba<input name="p3" value="${esc(c.p3||'')}" maxlength="20"></label><button type="button" class="x" data-del="${i}" ${used||list.length<2?'disabled title="Nội dung đã có trận hoặc là nội dung cuối cùng"':''}>Xoá</button></div>`}).join('');
+}
+function readCats(){return [...$('catRows').querySelectorAll('.crow')].map((row,i)=>{const src=(catDraft||CATS)[i];const v=n=>row.querySelector(`[name=${n}]`).value.trim();return {id:src.id,name:v('n')||'Nội dung',p1:v('p1'),p2:v('p2'),p3:v('p3')}})}
+$('catAdd').addEventListener('click',()=>{catDraft=readCats();let k=1;while(catDraft.some(c=>c.id==='c'+k))k++;catDraft.push({id:'c'+k,name:'Nội dung mới',p1:'',p2:'',p3:''});paintCats();const ins=$('catRows').querySelectorAll('[name=n]');ins[ins.length-1].focus();ins[ins.length-1].select()});
+$('catRows').addEventListener('click',e=>{const b=e.target.closest('[data-del]');if(!b||b.disabled)return;catDraft=readCats();catDraft.splice(+b.dataset.del,1);paintCats()});
+$('catForm').addEventListener('submit',e=>{
+  e.preventDefault();if(!adm()||!catsRef)return;const list=readCats();if(!list.length)return;
+  CATS=list;catDraft=null;if(!CATS.some(c=>c.id===curCat))setCat(CATS[0].id);
+  chain=chain.then(()=>catsRef.set({list,t:Date.now()})).then(()=>toast('Đã lưu nội dung thi đấu')).catch(()=>toast('Chưa lưu được'));
+  document.activeElement&&document.activeElement.blur();paintCats();render();
+});
 $('addForm').addEventListener('submit',e=>{
   e.preventDefault();if(!col||!adm())return;
   const f=new FormData(e.target);const dbl=f.get('dbl')==='1';const first=f.get('first');
   const n={a:{name:f.get('an').trim(),players:f.get('ap').trim()},b:{name:f.get('bn').trim(),players:f.get('bp').trim()},court:f.get('court').trim(),round:f.get('round').trim(),
-    dbl,stage:f.get('stage'),to:ruleFor(f.get('stage')).to,winBy:ruleFor(f.get('stage')).winBy,cap:0,bestOf:ruleFor(f.get('stage')).bo,first,srv:first,sn:dbl?2:1,sc:[0,0],games:[],status:'up',hist:[],order:Date.now(),t:Date.now()};
+    dbl,cat:curCat,stage:f.get('stage'),to:ruleFor(f.get('stage')).to,winBy:ruleFor(f.get('stage')).winBy,cap:0,bestOf:ruleFor(f.get('stage')).bo,first,srv:first,sn:dbl?2:1,sc:[0,0],games:[],status:'up',hist:[],order:Date.now(),t:Date.now()};
   const ref=col.doc();matches.push(Object.assign({id:ref.id},n));sel=ref.id;filter='up';
   for(const x of $('tabs').children)x.setAttribute('aria-pressed',String(x.dataset.f==='up'));
   render();e.target.reset();toast('Đã thêm trận');
@@ -869,8 +929,9 @@ route();
   firebase.initializeApp(cfg);db=firebase.firestore();canWrite=true;
   firebase.auth().onAuthStateChanged(u=>{fbUser=u;authLoaded=true;if(wantRef&&u)refOn=true;wantRef=false;if(refOn&&!u){refOn=false;lsSet('pbRef','0')}render();if(!$('stage').hidden)paintStage()});
   col=db.collection('matches');
-  dref=db.doc('meta/draw');
-  dref.onSnapshot(s=>onDraw(s.exists?s.data():null),()=>{});
+  
+  subDraw();
+  catsRef=db.doc('meta/cats');catsRef.onSnapshot(s=>onCats(s.exists?s.data():null),()=>{});
   rulesRef=db.doc('meta/rules');rulesRef.onSnapshot(s=>onRules(s.exists?s.data():null),()=>{});
   col.onSnapshot(s=>{
     if(!s.metadata.fromCache)clearTimeout(timer);
