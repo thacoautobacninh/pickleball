@@ -956,11 +956,12 @@ function renderTong(){
   const fw=fin&&winnerOf(fin),side=(m,t)=>m?ppl(nm(m,t)).map(x=>`<span>${esc(x)}</span>`).join(''):'';
   let p3='';if(third&&winnerOf(third))p3=side(third,winnerOf(third));
   const pd=(c,n,lab,prize,names)=>`<div class="pd ${c}"><div class="pp">${n}</div><div class="pl">${lab}</div><div class="pn">${names||'<span>Chờ kết quả</span>'}</div><div class="pz">${prize}</div></div>`;
-  const hasQF=qf.length||tables.length===8;
+  const hasQF=qf.length||tables.length===8;const ngT=tables.length;
+  const sfL=hasQF?['Thắng TK1 – Thắng TK2','Thắng TK3 – Thắng TK4']:ngT===4?['Nhất A – Nhất B','Nhất C – Nhất D']:ngT===2?['Nhất A – Nhì B','Nhất B – Nhì A']:['Hạng 1 – Hạng 4 (thành tích)','Hạng 2 – Hạng 3 (thành tích)'];
   const qfL=['Tứ kết 1 · Nhất A – Nhất B','Tứ kết 2 · Nhất C – Nhất D','Tứ kết 3 · Nhất E – Nhất F','Tứ kết 4 · Nhất G – Nhất H'];
   box.innerHTML=`<div class="pod">${pd('p2',2,'GIẢI NHÌ',esc(curC().p2||''),fw?side(fin,oth(fw)):'')}${pd('p1',1,'GIẢI NHẤT',esc(curC().p1||''),fw?side(fin,fw):'')}${pd('p3',3,'GIẢI BA',esc(curC().p3||''),p3)}</div>
   <h2>Vòng loại trực tiếp</h2>
-  <div class="ko${hasQF?' k3':''}">${hasQF?`<div class="col">${[0,1,2,3].map(i=>koBox(qf[i],qfL[i],'qf')).join('')}</div>`:''}<div class="col">${koBox(semis[0],hasQF?'Bán kết 1 · Thắng TK1 – TK2':'Bán kết 1','semi')}${koBox(semis[1],hasQF?'Bán kết 2 · Thắng TK3 – TK4':'Bán kết 2','semi')}</div><div class="col">${koBox(fin,'Chung kết','final')}${koBox(third,'Tranh hạng ba','semi')}</div></div>
+  <div class="ko${hasQF?' k3':''}">${hasQF?`<div class="col">${[0,1,2,3].map(i=>koBox(qf[i],qfL[i],'qf')).join('')}</div>`:''}<div class="col">${koBox(semis[0],'Bán kết 1 · '+sfL[0],'semi')}${koBox(semis[1],'Bán kết 2 · '+sfL[1],'semi')}</div><div class="col">${koBox(fin,'Chung kết · Thắng BK1 – Thắng BK2','final')}${koBox(third,'Tranh hạng ba · Thua BK1 – Thua BK2','semi')}</div></div>
   <h2>Vòng bảng</h2>
   ${tables.length?`<div class="gq">${tables.map(([g,rows])=>`<div class="sc"><h3 class="gh"><span>Bảng ${esc(g)}</span><span class="kr">${esc(grpRule(G.get(g)))}</span></h3><table class="st"><thead><tr><th>#</th><th class="l">Đội</th><th>T-B</th><th>HS</th></tr></thead><tbody>${rows.map((x,i)=>`<tr class="${i===0&&x.p?'q':''}"><td><span class="rk">${i+1}</span></td><td class="l vn">${lines(x.n)}</td><td>${x.w}-${x.l}</td><td>${x.pf-x.pa>0?'+':''}${x.pf-x.pa}</td></tr>`).join('')}</tbody></table></div>`).join('')}</div>`:'<p class="note">Chưa có bảng đấu.</p>'}`;
 }
