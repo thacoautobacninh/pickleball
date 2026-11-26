@@ -223,6 +223,9 @@ form.cats{grid-template-columns:1fr}
 .ctag{display:inline-block;background:rgba(212,239,74,.16);color:var(--ball);border-radius:6px;padding:0 6px;font-weight:700;margin-right:6px}
 .cct{display:block;font:600 12px/1.3 "Be Vietnam Pro",sans-serif;color:var(--ball);margin-top:4px}
 .man{margin-top:18px}.man summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}
+.vn>span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:600px){.ln{font-size:clamp(15px,4.3vw,20px)}.nr{font-size:13px;padding:8px 10px}.lp{font-size:40px}.lr{gap:8px}}
+.tn.vn{display:block}
 .none{color:#c8d6ea;background:rgba(255,255,255,.07);border-radius:16px;padding:20px}
 .dlg{position:fixed;inset:0;background:rgba(5,15,30,.6);display:grid;place-items:center;padding:16px;z-index:20}
 .dlg[hidden]{display:none}
@@ -436,7 +439,7 @@ function scoreRows(m,big){
     const T=m[t]||{};const srv=m.status==='live'&&m.srv===t;
     const gs=(m.games||[]).map(g=>{const mine=g[ix(t)],their=g[ix(oth(t))];return `<span class="${mine>their?'w':''}">${esc(mine)}</span>`}).join('');
     return `<div class="row"><div class="sw" style="background:var(--${t})"></div>
-     <div><div class="tn">${esc(nm(m,t))}${srv?`<span class="srv">${ball}${m.dbl?'Người giao '+esc(m.sn):'Giao bóng'}</span>`:''}</div>
+     <div><div class="tn vn">${lines(nm(m,t))}${srv?`<span class="srv">${ball}${m.dbl?'Người giao '+esc(m.sn):'Giao bóng'}</span>`:''}</div>
      ${m.bestOf>1?`<div class="pl">Trận thắng: ${w[ix(t)]}</div>`:''}</div>
      <div class="gs" aria-label="Điểm các trận trước">${gs}</div>
      <div class="pt" aria-label="Điểm trận hiện tại">${esc(m.sc?.[ix(t)]??0)}</div></div>`;
@@ -473,14 +476,14 @@ function renderList(){
   if(!got){L.innerHTML='';return}
   if(!arr.length){L.innerHTML=`<p style="color:var(--mut)">Không có trận nào ở mục này.</p>`;return}
   L.innerHTML=arr.map(m=>{const w=wins(m),s=m.sc||[0,0],done=m.status==='done';
-    const r=t=>`<div class="tr"><b>${esc(nm(m,t))}</b><span>${m.status==='up'?'':done&&m.bestOf>1?esc(w[ix(t)]):esc(done?(m.games?.at(-1)?.[ix(t)]??0):s[ix(t)])}</span></div>`;
+    const r=t=>`<div class="tr"><b class="vn">${lines(nm(m,t))}</b><span>${m.status==='up'?'':done&&m.bestOf>1?esc(w[ix(t)]):esc(done?(m.games?.at(-1)?.[ix(t)]??0):s[ix(t)])}</span></div>`;
     return `<button class="mc" data-id="${esc(m.id)}" aria-current="${m.id===sel}"><div class="m2"><span>${esc(m.court||'')}${m.round?' · '+esc(m.round):''}</span>${statusPill(m)}</div>${r('a')}${r('b')}</button>`}).join('');
 }
 const cName=m=>(m.court||'').trim()||'Chưa xếp sân';
 const byCourt=(a,b)=>a.localeCompare(b,'vi',{numeric:true});
 function liveCard(m){
   const w=wins(m),s=m.sc||[0,0],si=ix(m.srv);
-  const row=t=>`<div class="lr"><i style="background:var(--${t})"></i><span class="ln">${esc(nm(m,t))}${m.srv===t?ball:''}</span>${m.bestOf>1?`<span class="lg">${w[ix(t)]}</span>`:'<span></span>'}<b class="lp">${esc(s[ix(t)])}</b></div>`;
+  const row=t=>`<div class="lr"><i style="background:var(--${t})"></i><span class="ln vn">${linesX(nm(m,t),m.srv===t?ball:'')}</span>${m.bestOf>1?`<span class="lg">${w[ix(t)]}</span>`:'<span></span>'}<b class="lp">${esc(s[ix(t)])}</b></div>`;
   return `<button class="lc" data-id="${esc(m.id)}" aria-label="Xem chi tiết trận ${esc(nm(m,'a'))} gặp ${esc(nm(m,'b'))}"><div class="lm"><span>${CATS.length>1?`<span class="ctag">${esc(catName(catOf(m)))}</span>`:''}${esc(m.round||'')}</span></div>${row('a')}${row('b')}<div class="lf"><span>Trận ${esc((m.games||[]).length+1)} · ${esc(ruleTxt(m))}</span><span>${esc(s[si])}-${esc(s[1-si])}${m.dbl?'-'+esc(m.sn):''}</span></div></button>`;
 }
 function renderLive(){
@@ -494,7 +497,7 @@ function renderLive(){
     const ms=by.get(c).sort((x,y)=>(x.order??0)-(y.order??0));const live=ms.filter(m=>m.status==='live'),up=ms.filter(m=>m.status==='up');
     const cn=CATS.length>1?[...new Set(ms.map(m=>catName(catOf(m))))]:[];
     return `<section class="cc"><div class="ch"><h3>${esc(c)}${cn.length?`<small class="cct">${cn.map(esc).join(' · ')}</small>`:''}</h3><span class="chr">${live.length?'<span class="pill live">Đang đánh</span>':'<span class="pill up">Sân trống</span>'}${adm()?`<button class="rn" data-rn="${esc(c)}">Đổi tên</button>`:''}</span></div>${live.map(liveCard).join('')}`+
-    (up.length?`<div class="nx"><div class="nxh">Tiếp theo</div>${up.slice(0,3).map(m=>`<button class="nr" data-id="${esc(m.id)}"><span>${esc(nm(m,'a'))}</span><i>gặp</i><span>${esc(nm(m,'b'))}</span></button>`).join('')}${up.length>3?`<div class="nxh">+${up.length-3} trận nữa</div>`:''}</div>`:'')+'</section>';
+    (up.length?`<div class="nx"><div class="nxh">Tiếp theo</div>${up.slice(0,3).map(m=>`<button class="nr" data-id="${esc(m.id)}"><span class="vn">${lines(nm(m,'a'))}</span><i>gặp</i><span class="vn">${lines(nm(m,'b'))}</span></button>`).join('')}${up.length>3?`<div class="nxh">+${up.length-3} trận nữa</div>`:''}</div>`:'')+'</section>';
   }).join('');
 }
 let gsel=null;
@@ -516,9 +519,9 @@ function renderStand(){
   const sg=n=>n>0?'+'+n:String(n);
   const res=ms.filter(m=>m.status!=='up').sort((x,y)=>(x.status==='live'?0:1)-(y.status==='live'?0:1)||(y.t??0)-(x.t??0));
   const left=ms.filter(m=>m.status==='up').length;
-  $('stand').innerHTML=`<div class="sc"><table class="st"><thead><tr><th>#</th><th class="l">Đội</th><th>Đấu</th><th>Thắng</th><th>Thua</th><th title="Hiệu số điểm">HS</th></tr></thead><tbody>${rows.map((r,i)=>`<tr><td><span class="rk">${i+1}</span></td><td class="l">${esc(r.n)}</td><td>${r.p}</td><td><b>${r.w}</b></td><td>${r.l}</td><td>${sg(r.pf-r.pa)}</td></tr>`).join('')}</tbody></table><p class="note">Xếp theo số lần thắng, rồi hiệu số điểm (HS), rồi tổng điểm ghi được. ${left?esc(left)+' trận chưa đấu.':'Bảng đã đấu xong.'}</p></div>`+
+  $('stand').innerHTML=`<div class="sc"><table class="st"><thead><tr><th>#</th><th class="l">Đội</th><th>Đấu</th><th>Thắng</th><th>Thua</th><th title="Hiệu số điểm">HS</th></tr></thead><tbody>${rows.map((r,i)=>`<tr><td><span class="rk">${i+1}</span></td><td class="l vn">${lines(r.n)}</td><td>${r.p}</td><td><b>${r.w}</b></td><td>${r.l}</td><td>${sg(r.pf-r.pa)}</td></tr>`).join('')}</tbody></table><p class="note">Xếp theo số lần thắng, rồi hiệu số điểm (HS), rồi tổng điểm ghi được. ${left?esc(left)+' trận chưa đấu.':'Bảng đã đấu xong.'}</p></div>`+
   `<div class="sc"><h3>Kết quả bảng ${esc(gsel)}</h3>${res.length?res.map(m=>{const win=winnerOf(m);const mid=m.status==='live'?`<span class="pill live">${esc((m.sc||[0,0]).join('-'))}</span>`:esc((m.games||[]).map(g=>g[0]+'-'+g[1]).join(', ')||'—');
-    return `<button class="rs" data-id="${esc(m.id)}"><span class="${win==='a'?'wn':''}">${esc(nm(m,'a'))}</span><span class="rsc">${mid}</span><span class="${win==='b'?'wn':''}">${esc(nm(m,'b'))}</span></button>`}).join(''):'<p class="note">Chưa có kết quả.</p>'}</div>`;
+    return `<button class="rs" data-id="${esc(m.id)}"><span class="vn ${win==='a'?'wn':''}">${lines(nm(m,'a'))}</span><span class="rsc">${mid}</span><span class="vn ${win==='b'?'wn':''}">${lines(nm(m,'b'))}</span></button>`}).join(''):'<p class="note">Chưa có kết quả.</p>'}</div>`;
 }
 function render(){
   renderLive();renderBoard();renderStand();renderList();renderTong();
@@ -575,6 +578,7 @@ function makePicks(teams,g){
 function groupsOf(n){const gs=Array.from({length:draw.ng},()=>[]);draw.picks.slice(0,n).forEach((p,i)=>gs[p.g].push(Object.assign({i},p)));return gs}
 const ppl=t=>String(t||'').split(/\s*\/\s*/).map(x=>x.trim()).filter(Boolean);
 const lines=t=>ppl(t).map(x=>`<span>${esc(x)}</span>`).join('');
+const linesX=(t,extra)=>{const a=ppl(t);return a.map((x,i)=>`<span>${esc(x)}${i===a.length-1?extra:''}</span>`).join('')};
 const subOf=p=>(p.players&&p.name&&p.name.trim().toLowerCase()!==p.players.trim().toLowerCase())?p.name:'';
 function setName(t){const N=$('stName');N.innerHTML=lines(t);N.style.fontSize='';
   let fs=parseFloat(getComputedStyle(N).fontSize),k=0;
@@ -848,7 +852,7 @@ function mkMatch(A,B,round,stage){const R=ruleFor(stage);return {id:'sim-'+round
 function koBox(m,label){
   if(!m)return `<div class="kb empty"><div class="kl">${esc(label)}</div><div class="kt"><span>Chờ xác định</span></div><div class="kt"><span>Chờ xác định</span></div></div>`;
   const win=winnerOf(m),g=m.games||[];
-  const row=t=>`<div class="kt ${win===t?'w':''}"><span>${esc(nm(m,t))}</span><b>${m.status==='live'?esc((m.sc||[0,0])[ix(t)]):esc(g.map(x=>x[ix(t)]).join(' · '))}</b></div>`;
+  const row=t=>`<div class="kt ${win===t?'w':''}"><span class="vn">${lines(nm(m,t))}</span><b>${m.status==='live'?esc((m.sc||[0,0])[ix(t)]):esc(g.map(x=>x[ix(t)]).join(' · '))}</b></div>`;
   const click=!simOn&&!String(m.id).startsWith('sim');
   return `<${click?'button':'div'} class="kb"${click?` data-id="${esc(m.id)}"`:''}><div class="kl">${esc(label)}${m.status==='live'?' · Trực tiếp':''}</div>${row('a')}${row('b')}</${click?'button':'div'}>`;
 }
@@ -902,7 +906,7 @@ function renderTong(){
   <h2>Vòng loại trực tiếp</h2>
   <div class="ko${hasQF?' k3':''}">${hasQF?`<div class="col">${[0,1,2,3].map(i=>koBox(qf[i],qfL[i])).join('')}</div>`:''}<div class="col">${koBox(semis[0],hasQF?'Bán kết 1 · Thắng TK1 – TK2':'Bán kết 1')}${koBox(semis[1],hasQF?'Bán kết 2 · Thắng TK3 – TK4':'Bán kết 2')}</div><div class="col">${koBox(fin,'Chung kết')}${koBox(third,'Tranh hạng ba')}</div></div>
   <h2>Vòng bảng</h2>
-  ${tables.length?`<div class="gq">${tables.map(([g,rows])=>`<div class="sc"><h3>Bảng ${esc(g)}</h3><table class="st"><thead><tr><th>#</th><th class="l">Đội</th><th>T-B</th><th>HS</th></tr></thead><tbody>${rows.map((x,i)=>`<tr class="${i===0&&x.p?'q':''}"><td><span class="rk">${i+1}</span></td><td class="l">${esc(x.n)}</td><td>${x.w}-${x.l}</td><td>${x.pf-x.pa>0?'+':''}${x.pf-x.pa}</td></tr>`).join('')}</tbody></table></div>`).join('')}</div>`:'<p class="note">Chưa có bảng đấu.</p>'}`;
+  ${tables.length?`<div class="gq">${tables.map(([g,rows])=>`<div class="sc"><h3>Bảng ${esc(g)}</h3><table class="st"><thead><tr><th>#</th><th class="l">Đội</th><th>T-B</th><th>HS</th></tr></thead><tbody>${rows.map((x,i)=>`<tr class="${i===0&&x.p?'q':''}"><td><span class="rk">${i+1}</span></td><td class="l vn">${lines(x.n)}</td><td>${x.w}-${x.l}</td><td>${x.pf-x.pa>0?'+':''}${x.pf-x.pa}</td></tr>`).join('')}</tbody></table></div>`).join('')}</div>`:'<p class="note">Chưa có bảng đấu.</p>'}`;
 }
 $('nextBtn').addEventListener('click',()=>{
   if(!adm()||!col)return;const P=nextPlan(matches.filter(inCat));if(!P.list)return toast(P.err);
