@@ -233,6 +233,7 @@ form.cats{grid-template-columns:1fr}
 .gh{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:2px 10px}.gh .kr{font-size:12.5px}.gh2{font-size:13px;margin:2px 0 6px}
 .st td.tc{vertical-align:middle;padding-left:10px}.tact{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}.rpT{min-height:32px;padding:0 10px;font-size:12px;background:transparent;color:var(--court);border:1px solid var(--line);white-space:nowrap}
 .rmT{min-height:32px;padding:0 10px;font-size:12px;background:transparent;color:#e5484d;border:1px solid rgba(229,72,77,.45);white-space:nowrap}
+.curcat{display:grid;gap:4px;font-weight:700;font-size:14px;margin:0 0 12px;max-width:520px}.curcat select{font-weight:700;border:2px solid var(--court)}
 .lut{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:10px;margin:-10px 0 30px}.lut div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.lut b{display:block;font-size:13px;color:var(--mut);font-weight:700}.lut span{font-weight:800;font-size:16px}
 .tle{margin-bottom:24px}.tle h3{font-size:22px;margin:4px 0 8px}.tle ol{margin:0;padding-left:22px;display:grid;gap:6px;font-size:15px;line-height:1.5}
 @media(max-width:480px){.nr{grid-template-columns:1fr!important;gap:6px!important}.nr i{width:auto;height:1px;align-self:auto}.nr>span:last-child,.nr>span:last-child>span{text-align:left}}
@@ -313,7 +314,7 @@ form.cats{grid-template-columns:1fr}
     <label>VĐV đội B<input name="bp" maxlength="60"></label>
     <label>Sân<input name="court" maxlength="20" placeholder="Sân 1"></label>
     <label>Vòng / bảng<input name="round" id="roundIn" maxlength="30" placeholder="Bảng A, Bán kết 1, Chung kết…" list="roundList"><datalist id="roundList"><option value="Bảng A"><option value="Bảng B"><option value="Bảng C"><option value="Bảng D"><option value="Tứ kết"><option value="Bán kết 1"><option value="Bán kết 2"><option value="Tranh hạng ba"><option value="Chung kết"></datalist></label>
-    <label>Nội dung<select name="dbl"><option value="1">Đôi hỗn hợp</option><option value="0">Đánh đơn</option></select></label>
+    <label>Hình thức<select name="dbl"><option value="1">Đánh đôi</option><option value="0">Đánh đơn</option></select></label>
     <label>Giai đoạn<select name="stage" id="stageSel"><option value="group">Vòng bảng</option><option value="qf">Tứ kết</option><option value="semi">Bán kết</option><option value="final">Chung kết</option></select></label>
     <p class="note" id="stageHint" style="margin:0;align-self:end"></p>
     <p class="note full" style="margin:0">Luật điểm lấy theo giai đoạn (cài ở tab Bốc thăm → Luật thi đấu). Gõ “Bán kết…”/“Chung kết” ở ô Vòng, giai đoạn tự chọn theo.</p><label>Giao bóng trước<select name="first"><option value="a">Đội A</option><option value="b">Đội B</option></select></label>
@@ -339,12 +340,14 @@ form.cats{grid-template-columns:1fr}
   </section>
   <section id="drawSec" hidden style="margin-top:32px">
    <h2>Bốc thăm chia bảng</h2>
+   <label class="curcat">Đang bốc thăm cho nội dung<select id="catSel" aria-label="Chọn nội dung"></select></label>
+   <p class="note" id="drawLock" hidden style="margin:0 0 12px;color:#e5484d;font-weight:600"></p>
    <form id="drawForm">
     <label class="full">Danh sách cặp VĐV (mỗi dòng 1 cặp)
      <textarea name="teams" id="teamsTxt" required placeholder="*KIA - MAZDA | Minh Tuấn / Hoàng Long&#10;*Peugeot | Quang Huy / Đức Anh&#10;BMW - MINI | Thành Đạt / Minh Khôi&#10;Dịch vụ | Văn Hải / Thu Trang"></textarea></label>
     <details class="full hint"><summary>Cách xếp sẵn vào bảng / hạt giống</summary><p>Ghi chữ bảng trong ngoặc vuông ở đầu dòng để xếp sẵn: <code>[A] Nguyễn Văn A / Trần Văn B</code>. Thêm dấu <code>*</code> ở đầu dòng cho hạt giống (mỗi bảng 1). Dòng không ghi gì sẽ bốc ngẫu nhiên.</p></details><label>Số bảng<select name="ng"><option>1</option><option>2</option><option>3</option><option>4</option><option>6</option><option selected>8</option></select></label>
     <label>Số sân dùng<input name="courts" type="number" min="1" max="20" value="8"></label><label>Bắt đầu từ sân số<input name="c0" type="number" min="1" max="30" value="1"></label>
-    <label>Nội dung<select name="dbl"><option value="1">Đôi hỗn hợp</option><option value="0">Đánh đơn</option></select></label>
+    <label>Hình thức<select name="dbl"><option value="1">Đánh đôi</option><option value="0">Đánh đơn</option></select></label>
     
     <p class="note full" style="margin:0">Các trận vòng bảng dùng luật <b>Vòng bảng</b> ở mục Luật thi đấu phía trên.</p>
     <button class="full" type="submit">Bốc thăm và mở màn hình trình chiếu</button>
@@ -720,10 +723,12 @@ $('clearDraw').addEventListener('click',e=>{
   onDraw(null);chain=chain.then(()=>dref.delete()).then(()=>toast('Đã xoá kết quả bốc thăm')).catch(()=>toast('Chưa xoá được, thử lại'));
 });
 $('openStage').addEventListener('click',()=>{location.hash='boc-tham'});
-try{const t=localStorage.getItem('pbTeams');if(t)$('teamsTxt').value=t}catch(e){}
-$('teamsTxt').addEventListener('input',e=>{try{localStorage.setItem('pbTeams',e.target.value)}catch(_){}});
+function loadTeamsDraft(){let t='';try{t=localStorage.getItem('pbTeams_'+curCat)||(curCat==='c1'?localStorage.getItem('pbTeams')||'':'')}catch(e){}$('teamsTxt').value=t;try{$('manTxt').value=localStorage.getItem('pbMan_'+curCat)||''}catch(e){}}
+loadTeamsDraft();
+$('teamsTxt').addEventListener('input',e=>{try{localStorage.setItem('pbTeams_'+curCat,e.target.value)}catch(_){}});
+$('manTxt').addEventListener('input',e=>{try{localStorage.setItem('pbMan_'+curCat,e.target.value)}catch(_){}});
 $('manForm').addEventListener('submit',e=>{
-  e.preventDefault();if(!dref||!adm())return toast('Cần đăng nhập Ban tổ chức');
+  e.preventDefault();if(!dref||!adm())return toast('Cần đăng nhập Ban tổ chức');if(draw&&draw.picks&&draw.picks.length)return toast(`Nội dung “${curC().name}” đã có kết quả bốc thăm. Bấm “Xoá kết quả bốc thăm” trước, hoặc chọn nội dung khác ở ô phía trên.`);
   const groups=[];let cur=-1;
   for(const raw of $('manTxt').value.split('\n')){const l=raw.trim();if(!l)continue;
     const h=/^(?:bảng|bang|group)\s*([A-Za-z])\s*:?\s*$/i.exec(l);
@@ -744,7 +749,7 @@ $('manForm').addEventListener('submit',e=>{
   $('manBox').open=false;toast(`Đã lưu ${ng} bảng, ${picks.length} cặp`);location.hash='boc-tham';
 });
 $('drawForm').addEventListener('submit',e=>{
-  e.preventDefault();if(!dref)return toast('Chưa kết nối dữ liệu');
+  e.preventDefault();if(!dref)return toast('Chưa kết nối dữ liệu');if(draw&&draw.picks&&draw.picks.length)return toast(`Nội dung “${curC().name}” đã có kết quả bốc thăm. Bấm “Xoá kết quả bốc thăm” trước, hoặc chọn nội dung khác ở ô phía trên.`);
   const f=new FormData(e.target);const teams=parseTeams(f.get('teams'));const g=+f.get('ng')||1;
   if(teams.length<2)return toast('Cần ít nhất 2 đội');
   if(teams.length<g*2)return toast('Mỗi bảng cần ít nhất 2 đội — giảm số bảng');
@@ -970,8 +975,11 @@ $('simBtn').addEventListener('click',()=>{simOn=!simOn;renderTong()});
 $('tong').addEventListener('click',e=>{const b=e.target.closest('[data-id]');if(b)location.hash='m-'+b.dataset.id});
 /* ---------- Nội dung thi đấu ---------- */
 function subDraw(){if(!db)return;if(drawUnsub)try{drawUnsub()}catch(e){}firstDraw=true;dref=db.doc(drawPath(curCat));drawUnsub=dref.onSnapshot(s=>onDraw(s.exists?s.data():null),()=>{})}
-function setCat(id){if(id===curCat||!CATS.some(c=>c.id===id))return;curCat=id;try{localStorage.setItem('pbCat',id)}catch(e){}cf='all';simOn=false;draw=null;shownD=0;subDraw();render()}
-function renderCatbar(){$('cbIn').innerHTML='<small>Nội dung:</small>'+CATS.map(c=>`<button data-cat="${esc(c.id)}" aria-pressed="${c.id===curCat}">${esc(c.name)}</button>`).join('')}
+function setCat(id){if(id===curCat||!CATS.some(c=>c.id===id))return;curCat=id;try{localStorage.setItem('pbCat',id)}catch(e){}cf='all';simOn=false;draw=null;shownD=0;subDraw();loadTeamsDraft();render()}
+function renderCatbar(){const cs=$('catSel');if(cs&&document.activeElement!==cs){cs.innerHTML=CATS.map(c=>`<option value="${esc(c.id)}"${c.id===curCat?' selected':''}>${esc(c.name)}</option>`).join('')}
+  {const L=$('drawLock');const has=!!(draw&&draw.picks&&draw.picks.length);L.hidden=!has;L.textContent=has?`Nội dung “${curC().name}” đã bốc thăm (${draw.picks.length} cặp). Muốn bốc lại phải bấm “Xoá kết quả bốc thăm” ở trên.`:''}
+  $('cbIn').innerHTML='<small>Nội dung:</small>'+CATS.map(c=>`<button data-cat="${esc(c.id)}" aria-pressed="${c.id===curCat}">${esc(c.name)}</button>`).join('')}
+$('catSel').addEventListener('change',e=>setCat(e.target.value));
 $('cbIn').addEventListener('click',e=>{const b=e.target.closest('[data-cat]');if(b)setCat(b.dataset.cat)});
 let catDraft=null;
 function onCats(d){
@@ -989,7 +997,7 @@ $('catAdd').addEventListener('click',()=>{catDraft=readCats();let k=1;while(catD
 $('catRows').addEventListener('click',e=>{const b=e.target.closest('[data-del]');if(!b||b.disabled)return;catDraft=readCats();catDraft.splice(+b.dataset.del,1);paintCats()});
 $('catForm').addEventListener('submit',e=>{
   e.preventDefault();if(!adm()||!catsRef)return;const list=readCats();if(!list.length)return;
-  CATS=list;catDraft=null;if(!CATS.some(c=>c.id===curCat))setCat(CATS[0].id);
+  const had=new Set(CATS.map(c=>c.id));CATS=list;catDraft=null;const added=list.find(c=>!had.has(c.id));if(added){setCat(added.id);toast('Đã chuyển sang nội dung mới: '+added.name)}else if(!CATS.some(c=>c.id===curCat))setCat(CATS[0].id);
   chain=chain.then(()=>catsRef.set({list,t:Date.now()})).then(()=>toast('Đã lưu nội dung thi đấu')).catch(()=>toast('Chưa lưu được'));
   document.activeElement&&document.activeElement.blur();paintCats();render();
 });
