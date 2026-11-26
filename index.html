@@ -230,6 +230,7 @@ form.cats{grid-template-columns:1fr}
 @media(max-width:600px){.ln{font-size:clamp(15px,4.3vw,20px)}.nr{font-size:13.5px}.lp{font-size:40px}.lr{gap:8px}}
 .tn.vn{display:block}
 .kl{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 10px}.kr{color:var(--court);font-weight:800}:root[data-theme=dark] .kr{color:var(--sky)}@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .kr{color:var(--sky)}}
+.gh{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:2px 10px}.gh .kr{font-size:12.5px}.gh2{font-size:13px;margin:2px 0 6px}
 .lut{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:10px;margin:-10px 0 30px}.lut div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.lut b{display:block;font-size:13px;color:var(--mut);font-weight:700}.lut span{font-weight:800;font-size:16px}
 .tle{margin-bottom:24px}.tle h3{font-size:22px;margin:4px 0 8px}.tle ol{margin:0;padding-left:22px;display:grid;gap:6px;font-size:15px;line-height:1.5}
 @media(max-width:480px){.nr{grid-template-columns:1fr!important;gap:6px!important}.nr i{width:auto;height:1px;align-self:auto}.nr>span:last-child,.nr>span:last-child>span{text-align:left}}
@@ -526,7 +527,7 @@ function renderStand(){
   const sg=n=>n>0?'+'+n:String(n);
   const res=ms.filter(m=>m.status!=='up').sort((x,y)=>(x.status==='live'?0:1)-(y.status==='live'?0:1)||(y.t??0)-(x.t??0));
   const left=ms.filter(m=>m.status==='up').length;
-  $('stand').innerHTML=`<div class="sc"><table class="st"><thead><tr><th>#</th><th class="l">Đội</th><th>Đấu</th><th>Thắng</th><th>Thua</th><th title="Hiệu số điểm">HS</th></tr></thead><tbody>${rows.map((r,i)=>`<tr><td><span class="rk">${i+1}</span></td><td class="l vn">${lines(r.n)}</td><td>${r.p}</td><td><b>${r.w}</b></td><td>${r.l}</td><td>${sg(r.pf-r.pa)}</td></tr>`).join('')}</tbody></table><p class="note">Xếp theo số lần thắng, rồi hiệu số điểm (HS), rồi tổng điểm ghi được. ${left?esc(left)+' trận chưa đấu.':'Bảng đã đấu xong.'}</p></div>`+
+  $('stand').innerHTML=`<div class="sc"><div class="kl gh2"><span>Bảng ${esc(gsel)}</span><span class="kr">${esc(grpRule(ms))}</span></div><table class="st"><thead><tr><th>#</th><th class="l">Đội</th><th>Đấu</th><th>Thắng</th><th>Thua</th><th title="Hiệu số điểm">HS</th></tr></thead><tbody>${rows.map((r,i)=>`<tr><td><span class="rk">${i+1}</span></td><td class="l vn">${lines(r.n)}</td><td>${r.p}</td><td><b>${r.w}</b></td><td>${r.l}</td><td>${sg(r.pf-r.pa)}</td></tr>`).join('')}</tbody></table><p class="note">Xếp theo số lần thắng, rồi hiệu số điểm (HS), rồi tổng điểm ghi được. ${left?esc(left)+' trận chưa đấu.':'Bảng đã đấu xong.'}</p></div>`+
   `<div class="sc"><h3>Kết quả bảng ${esc(gsel)}</h3>${res.length?res.map(m=>{const win=winnerOf(m);const mid=m.status==='live'?`<span class="pill live">${esc((m.sc||[0,0]).join('-'))}</span>`:esc((m.games||[]).map(g=>g[0]+'-'+g[1]).join(', ')||'—');
     return `<button class="rs" data-id="${esc(m.id)}"><span class="vn ${win==='a'?'wn':''}">${lines(nm(m,'a'))}</span><span class="rsc">${mid}</span><span class="vn ${win==='b'?'wn':''}">${lines(nm(m,'b'))}</span></button>`}).join(''):'<p class="note">Chưa có kết quả.</p>'}</div>`;
 }
@@ -856,6 +857,7 @@ function simulate(m){const n=JSON.parse(JSON.stringify(m));const to=n.to||11,wb=
   let k=0;while(Math.max(...wins(n))<need&&k++<9){const a=Math.random()<.5;let lo=Math.floor(Math.random()*to),hi=to;if(wb===2&&lo>=to-1){hi=lo+2}n.games.push(a?[hi,lo]:[lo,hi])}
   n.sc=[0,0];n.status='done';n.sim=true;return n}
 function mkMatch(A,B,round,stage){const R=ruleFor(stage);return {id:'sim-'+round,a:A,b:B,round,stage,to:R.to,winBy:R.winBy,bestOf:R.bo,cap:0,games:[],sc:[0,0],status:'up',dbl:true,first:'a',srv:'a',sn:2}}
+const grpRule=()=>{const R=RULES.group||DEF_RULES.group;return rtx(R.to,R.wb,R.bo)};
 const rtx=(to,wb,bo)=>`Chạm ${to} · ${wb===1?'0 cách':'cách 2'} · ${bo===3?'3 trận thắng 2':'1 trận'}`;
 function koBox(m,label,stg){const R=RULES[stg]||DEF_RULES[stg]||DEF_RULES.semi;const rt=m?rtx(m.to,m.winBy||2,m.bestOf||1):rtx(R.to,R.wb,R.bo);
   if(!m)return `<div class="kb empty"><div class="kl"><span>${esc(label)}</span><span class="kr">${esc(rt)}</span></div><div class="kt"><span>Chờ xác định</span></div><div class="kt"><span>Chờ xác định</span></div></div>`;
@@ -919,7 +921,7 @@ function renderTong(){
   <h2>Vòng loại trực tiếp</h2>
   <div class="ko${hasQF?' k3':''}">${hasQF?`<div class="col">${[0,1,2,3].map(i=>koBox(qf[i],qfL[i],'qf')).join('')}</div>`:''}<div class="col">${koBox(semis[0],hasQF?'Bán kết 1 · Thắng TK1 – TK2':'Bán kết 1','semi')}${koBox(semis[1],hasQF?'Bán kết 2 · Thắng TK3 – TK4':'Bán kết 2','semi')}</div><div class="col">${koBox(fin,'Chung kết','final')}${koBox(third,'Tranh hạng ba','semi')}</div></div>
   <h2>Vòng bảng</h2>
-  ${tables.length?`<div class="gq">${tables.map(([g,rows])=>`<div class="sc"><h3>Bảng ${esc(g)}</h3><table class="st"><thead><tr><th>#</th><th class="l">Đội</th><th>T-B</th><th>HS</th></tr></thead><tbody>${rows.map((x,i)=>`<tr class="${i===0&&x.p?'q':''}"><td><span class="rk">${i+1}</span></td><td class="l vn">${lines(x.n)}</td><td>${x.w}-${x.l}</td><td>${x.pf-x.pa>0?'+':''}${x.pf-x.pa}</td></tr>`).join('')}</tbody></table></div>`).join('')}</div>`:'<p class="note">Chưa có bảng đấu.</p>'}`;
+  ${tables.length?`<div class="gq">${tables.map(([g,rows])=>`<div class="sc"><h3 class="gh"><span>Bảng ${esc(g)}</span><span class="kr">${esc(grpRule(G.get(g)))}</span></h3><table class="st"><thead><tr><th>#</th><th class="l">Đội</th><th>T-B</th><th>HS</th></tr></thead><tbody>${rows.map((x,i)=>`<tr class="${i===0&&x.p?'q':''}"><td><span class="rk">${i+1}</span></td><td class="l vn">${lines(x.n)}</td><td>${x.w}-${x.l}</td><td>${x.pf-x.pa>0?'+':''}${x.pf-x.pa}</td></tr>`).join('')}</tbody></table></div>`).join('')}</div>`:'<p class="note">Chưa có bảng đấu.</p>'}`;
 }
 $('nextBtn').addEventListener('click',()=>{
   if(!adm()||!col)return;const P=nextPlan(matches.filter(inCat));if(!P.list)return toast(P.err);
