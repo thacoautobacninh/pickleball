@@ -135,7 +135,9 @@ textarea{font-family:inherit;font-size:16px;line-height:1.5;border:1px solid var
 .nx{display:grid;gap:6px}
 .nxh{font-size:13px;color:#c8d6ea;padding:0 4px}
 .nr{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:center;background:rgba(255,255,255,.1);color:#fff;border-radius:12px;text-align:left;font-weight:600;padding:8px 12px;width:100%}
-.nr span:last-child{text-align:right}.nr i{font-style:normal;color:#c8d6ea;font-weight:400;font-size:13px}
+.nr>span:first-child,.nr>span:first-child>span{text-align:left}.nr>span:last-child,.nr>span:last-child>span{text-align:right}
+.nr{grid-template-columns:minmax(0,1fr) 1px minmax(0,1fr)!important;gap:8px!important;font-size:12.5px;letter-spacing:-.01em;line-height:1.4;padding:8px 10px!important}
+.nr i{align-self:stretch;width:1px;padding:0;background:rgba(255,255,255,.28);font-size:0!important;overflow:hidden}.nr i{font-style:normal;color:#c8d6ea;font-weight:400;font-size:13px}
 .cf{display:flex;gap:8px;overflow-x:auto;margin:-6px 0 16px;padding-bottom:4px}
 .cf button{flex:none;min-height:38px;background:transparent;color:var(--mut);border:1px solid var(--line);font-size:14px}
 .cf button[aria-pressed=true]{background:var(--court);border-color:var(--court);color:#fff}
@@ -194,15 +196,16 @@ form.rules{grid-template-columns:1fr}
 .pd .pn{font-weight:800;font-size:clamp(14px,1.6vw,18px);line-height:1.25;min-height:2.5em}
 .pd .pn span{display:block}
 .pd .pz{margin-top:8px;font:900 clamp(18px,2.2vw,26px) "Be Vietnam Pro",sans-serif;color:var(--ball)}
-.ko{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px 28px;align-items:center;margin-bottom:28px}
-.ko .col{display:grid;gap:14px}
+.ko{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px 28px;align-items:stretch;margin-bottom:28px}
+.ko .col{display:flex;flex-direction:column;justify-content:space-around;gap:14px;height:100%}
 .kb{display:block;width:100%;text-align:left;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:10px 12px;font-weight:400}
 .kb.empty{opacity:.65}
 .kl{font-size:12px;color:var(--mut);font-weight:700;margin-bottom:4px}
 .kt{display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-top:1px solid var(--line)}
 .kt span{min-width:0;overflow-wrap:anywhere}.kt b{white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--mut)}
 .kt.w span,.kt.w b{font-weight:800;color:var(--ink)}
-.gq{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:12px}
+.gq{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,290px),1fr));gap:12px}
+.gq .vn>span{font-size:13.5px}
 .gq .sc h3{font-size:20px}
 .gq .st td{padding:7px 4px;font-size:14px}
 
@@ -224,8 +227,12 @@ form.cats{grid-template-columns:1fr}
 .cct{display:block;font:600 12px/1.3 "Be Vietnam Pro",sans-serif;color:var(--ball);margin-top:4px}
 .man{margin-top:18px}.man summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}
 .vn>span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-@media(max-width:600px){.ln{font-size:clamp(15px,4.3vw,20px)}.nr{font-size:13px;padding:8px 10px}.lp{font-size:40px}.lr{gap:8px}}
+@media(max-width:600px){.ln{font-size:clamp(15px,4.3vw,20px)}.nr{font-size:13.5px}.lp{font-size:40px}.lr{gap:8px}}
 .tn.vn{display:block}
+.kl{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 10px}.kr{color:var(--court);font-weight:800}:root[data-theme=dark] .kr{color:var(--sky)}@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .kr{color:var(--sky)}}
+.lut{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:10px;margin:-10px 0 30px}.lut div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.lut b{display:block;font-size:13px;color:var(--mut);font-weight:700}.lut span{font-weight:800;font-size:16px}
+.tle{margin-bottom:24px}.tle h3{font-size:22px;margin:4px 0 8px}.tle ol{margin:0;padding-left:22px;display:grid;gap:6px;font-size:15px;line-height:1.5}
+@media(max-width:480px){.nr{grid-template-columns:1fr!important;gap:6px!important}.nr i{width:auto;height:1px;align-self:auto}.nr>span:last-child,.nr>span:last-child>span{text-align:left}}
 .none{color:#c8d6ea;background:rgba(255,255,255,.07);border-radius:16px;padding:20px}
 .dlg{position:fixed;inset:0;background:rgba(5,15,30,.6);display:grid;place-items:center;padding:16px;z-index:20}
 .dlg[hidden]{display:none}
@@ -849,12 +856,13 @@ function simulate(m){const n=JSON.parse(JSON.stringify(m));const to=n.to||11,wb=
   let k=0;while(Math.max(...wins(n))<need&&k++<9){const a=Math.random()<.5;let lo=Math.floor(Math.random()*to),hi=to;if(wb===2&&lo>=to-1){hi=lo+2}n.games.push(a?[hi,lo]:[lo,hi])}
   n.sc=[0,0];n.status='done';n.sim=true;return n}
 function mkMatch(A,B,round,stage){const R=ruleFor(stage);return {id:'sim-'+round,a:A,b:B,round,stage,to:R.to,winBy:R.winBy,bestOf:R.bo,cap:0,games:[],sc:[0,0],status:'up',dbl:true,first:'a',srv:'a',sn:2}}
-function koBox(m,label){
-  if(!m)return `<div class="kb empty"><div class="kl">${esc(label)}</div><div class="kt"><span>Chờ xác định</span></div><div class="kt"><span>Chờ xác định</span></div></div>`;
+const rtx=(to,wb,bo)=>`Chạm ${to} · ${wb===1?'0 cách':'cách 2'} · ${bo===3?'3 trận thắng 2':'1 trận'}`;
+function koBox(m,label,stg){const R=RULES[stg]||DEF_RULES[stg]||DEF_RULES.semi;const rt=m?rtx(m.to,m.winBy||2,m.bestOf||1):rtx(R.to,R.wb,R.bo);
+  if(!m)return `<div class="kb empty"><div class="kl"><span>${esc(label)}</span><span class="kr">${esc(rt)}</span></div><div class="kt"><span>Chờ xác định</span></div><div class="kt"><span>Chờ xác định</span></div></div>`;
   const win=winnerOf(m),g=m.games||[];
   const row=t=>`<div class="kt ${win===t?'w':''}"><span class="vn">${lines(nm(m,t))}</span><b>${m.status==='live'?esc((m.sc||[0,0])[ix(t)]):esc(g.map(x=>x[ix(t)]).join(' · '))}</b></div>`;
   const click=!simOn&&!String(m.id).startsWith('sim');
-  return `<${click?'button':'div'} class="kb"${click?` data-id="${esc(m.id)}"`:''}><div class="kl">${esc(label)}${m.status==='live'?' · Trực tiếp':''}</div>${row('a')}${row('b')}</${click?'button':'div'}>`;
+  return `<${click?'button':'div'} class="kb"${click?` data-id="${esc(m.id)}"`:''}><div class="kl"><span>${esc(label)}${m.status==='live'?' · Trực tiếp':''}</span><span class="kr">${esc(rt)}</span></div>${row('a')}${row('b')}</${click?'button':'div'}>`;
 }
 const isQF=m=>stageOf(m)==='qf';
 const byRound=(a,b)=>String(a.round).localeCompare(String(b.round),'vi',{numeric:true});
@@ -883,6 +891,11 @@ function nextPlan(L){
     const list=[[winSide(sf[0]),winSide(sf[1]),'Chung kết','final']];if(!third)list.push([loseSide(sf[0]),loseSide(sf[1]),'Tranh hạng ba','semi']);return {stage:'final',list}}
   return {err:'Đã đủ các vòng.',end:true};
 }
+function theLe(ng){
+  const R=k=>RULES[k]||DEF_RULES[k],t=k=>`Chạm ${R(k).to} · ${R(k).wb===1?'0 cách':'cách 2'} · ${R(k).bo===3?'3 trận thắng 2':'1 trận'}`;
+  const st=[['group','Vòng bảng'],ng===8?['qf','Tứ kết']:null,['semi','Bán kết · Tranh hạng ba'],['final','Chung kết']].filter(Boolean);
+  return `<div class="lut">${st.map(([k,n])=>`<div><b>${n}</b><span>${t(k)}</span></div>`).join('')}</div>`;
+}
 function renderTong(){
   const box=$('tong');if(!box||$('pTong').hidden||!got)return;
   $('simBtn').setAttribute('aria-pressed',String(simOn));$('simBtn').textContent=simOn?'Tắt xem thử':'Xem thử khi đủ kết quả';
@@ -904,7 +917,7 @@ function renderTong(){
   const qfL=['Tứ kết 1 · Nhất A – Nhất B','Tứ kết 2 · Nhất C – Nhất D','Tứ kết 3 · Nhất E – Nhất F','Tứ kết 4 · Nhất G – Nhất H'];
   box.innerHTML=`<div class="pod">${pd('p2',2,'GIẢI NHÌ',esc(curC().p2||''),fw?side(fin,oth(fw)):'')}${pd('p1',1,'GIẢI NHẤT',esc(curC().p1||''),fw?side(fin,fw):'')}${pd('p3',3,'GIẢI BA',esc(curC().p3||''),p3)}</div>
   <h2>Vòng loại trực tiếp</h2>
-  <div class="ko${hasQF?' k3':''}">${hasQF?`<div class="col">${[0,1,2,3].map(i=>koBox(qf[i],qfL[i])).join('')}</div>`:''}<div class="col">${koBox(semis[0],hasQF?'Bán kết 1 · Thắng TK1 – TK2':'Bán kết 1')}${koBox(semis[1],hasQF?'Bán kết 2 · Thắng TK3 – TK4':'Bán kết 2')}</div><div class="col">${koBox(fin,'Chung kết')}${koBox(third,'Tranh hạng ba')}</div></div>
+  <div class="ko${hasQF?' k3':''}">${hasQF?`<div class="col">${[0,1,2,3].map(i=>koBox(qf[i],qfL[i],'qf')).join('')}</div>`:''}<div class="col">${koBox(semis[0],hasQF?'Bán kết 1 · Thắng TK1 – TK2':'Bán kết 1','semi')}${koBox(semis[1],hasQF?'Bán kết 2 · Thắng TK3 – TK4':'Bán kết 2','semi')}</div><div class="col">${koBox(fin,'Chung kết','final')}${koBox(third,'Tranh hạng ba','semi')}</div></div>
   <h2>Vòng bảng</h2>
   ${tables.length?`<div class="gq">${tables.map(([g,rows])=>`<div class="sc"><h3>Bảng ${esc(g)}</h3><table class="st"><thead><tr><th>#</th><th class="l">Đội</th><th>T-B</th><th>HS</th></tr></thead><tbody>${rows.map((x,i)=>`<tr class="${i===0&&x.p?'q':''}"><td><span class="rk">${i+1}</span></td><td class="l vn">${lines(x.n)}</td><td>${x.w}-${x.l}</td><td>${x.pf-x.pa>0?'+':''}${x.pf-x.pa}</td></tr>`).join('')}</tbody></table></div>`).join('')}</div>`:'<p class="note">Chưa có bảng đấu.</p>'}`;
 }
