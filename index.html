@@ -222,6 +222,7 @@ form.cats{grid-template-columns:1fr}
 .catacts{display:flex;flex-wrap:wrap;gap:10px}.catacts button{flex:1 1 180px}
 .ctag{display:inline-block;background:rgba(212,239,74,.16);color:var(--ball);border-radius:6px;padding:0 6px;font-weight:700;margin-right:6px}
 .cct{display:block;font:600 12px/1.3 "Be Vietnam Pro",sans-serif;color:var(--ball);margin-top:4px}
+.man{margin-top:18px}.man summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}
 .none{color:#c8d6ea;background:rgba(255,255,255,.07);border-radius:16px;padding:20px}
 .dlg{position:fixed;inset:0;background:rgba(5,15,30,.6);display:grid;place-items:center;padding:16px;z-index:20}
 .dlg[hidden]{display:none}
@@ -336,6 +337,14 @@ form.cats{grid-template-columns:1fr}
     <button class="full" type="submit">Bốc thăm và mở màn hình trình chiếu</button>
    </form>
    <p class="note">Kết quả được giữ bí mật cho tới khi bạn bấm “Rút đội tiếp theo” trên màn hình trình chiếu. Bốc xong, bấm “Tạo lịch thi đấu” để tự xếp các trận vòng tròn trong từng bảng.</p>
+   <details class="man" id="manBox"><summary>Tự xếp bảng (không bốc thăm)</summary>
+    <form id="manForm" autocomplete="off">
+     <label class="full">Dán danh sách đã xếp — mỗi bảng bắt đầu bằng dòng “Bảng A”, “Bảng B”…, bên dưới là các cặp của bảng đó
+      <textarea id="manTxt" required placeholder="Bảng A&#10;Nguyễn Văn A / Trần Thị B&#10;Lê Văn C / Phạm Thị D&#10;&#10;Bảng B&#10;Hoàng Văn E / Vũ Thị F&#10;…"></textarea></label>
+     <p class="note full" style="margin:0">Số sân, “Bắt đầu từ sân số” và nội dung lấy theo form bốc thăm phía trên. Bấm nút dưới để lưu các bảng và mở màn hình trình chiếu, ở đó bấm “Tạo lịch thi đấu”.</p>
+     <button class="full" type="submit">Lưu bảng đã xếp</button>
+    </form>
+   </details>
   </section>
   </div>
  </div>
@@ -578,6 +587,7 @@ function paintStage(newIdx=-1){
   G.innerHTML=groupsOf(shownD).map((g,k)=>`<div class="grp"><h3>Bảng ${GL(k)}</h3><ol>${g.map(p=>`<li class="${p.i===newIdx?'new':''}">${lines(pName(p))}</li>`).join('')}${'<li class="ph"><span>·</span></li>'.repeat(Math.max(0,cap[k]-g.length))}</ol></div>`).join('');
   if(newIdx<0){
     if(shownD===0){N.className='st-name';setName('Sẵn sàng');$('stTo').textContent=`${draw.picks.length} đội · ${draw.ng} bảng`;$('stPl').textContent=''}
+    else if(draw.manual){N.className='st-name';setName(curC().name);$('stTo').textContent='Danh sách các bảng';$('stPl').textContent=''}
     else{const p=draw.picks[shownD-1];N.className='st-name';setName(pName(p));$('stTo').textContent=shownD>=draw.picks.length?'Hoàn tất bốc thăm':'Vào bảng '+GL(p.g)+(p.fixed?' · xếp sẵn':'');$('stPl').textContent=subOf(p)}
   }
   renderCtl();
@@ -607,7 +617,7 @@ function renderCtl(){
   if(adm()&&draw){
     if(draw.shown<draw.picks.length)h+='<button class="go" data-s="next">Rút đội tiếp theo</button><button data-s="all">Rút hết</button>';
     else if(!draw.made)h+='<button class="go" data-s="sched">Tạo lịch thi đấu</button>';
-    h+=`<button data-s="redo">${confirmRedo?'Bấm lần nữa để bốc lại':'Bốc lại từ đầu'}</button>`;
+    if(!draw.manual)h+=`<button data-s="redo">${confirmRedo?'Bấm lần nữa để bốc lại':'Bốc lại từ đầu'}</button>`;
   }
   h+='<button data-s="fs">Toàn màn hình</button><button data-s="back">Quay lại</button>';
   C.innerHTML=h;
@@ -664,6 +674,27 @@ $('clearDraw').addEventListener('click',e=>{
 $('openStage').addEventListener('click',()=>{location.hash='boc-tham'});
 try{const t=localStorage.getItem('pbTeams');if(t)$('teamsTxt').value=t}catch(e){}
 $('teamsTxt').addEventListener('input',e=>{try{localStorage.setItem('pbTeams',e.target.value)}catch(_){}});
+$('manForm').addEventListener('submit',e=>{
+  e.preventDefault();if(!dref||!adm())return toast('Cần đăng nhập Ban tổ chức');
+  const groups=[];let cur=-1;
+  for(const raw of $('manTxt').value.split('\n')){const l=raw.trim();if(!l)continue;
+    const h=/^(?:bảng|bang|group)\s*([A-Za-z])\s*:?\s*$/i.exec(l);
+    if(h){cur=h[1].toUpperCase().charCodeAt(0)-65;groups[cur]=groups[cur]||[];continue}
+    const f=/^\[\s*([A-Za-z])\s*\]/.exec(l);const t=parseTeams(l)[0];if(!t)continue;
+    const k=f?f[1].toUpperCase().charCodeAt(0)-65:cur;
+    if(k<0)return toast('Thiếu dòng “Bảng A” trước cặp: '+t.name);
+    (groups[k]=groups[k]||[]).push(t);}
+  const ng=groups.length;
+  if(!ng)return toast('Chưa có bảng nào');
+  for(let k=0;k<ng;k++){if(!groups[k]||!groups[k].length)return toast(`Thiếu Bảng ${GL(k)} (các bảng phải liền nhau A, B, C…)`);if(groups[k].length<2)return toast(`Bảng ${GL(k)} cần ít nhất 2 cặp`)}
+  const all=groups.flat();if(new Set(all.map(t=>t.name.toLowerCase())).size!==all.length)return toast('Có cặp bị trùng tên');
+  const picks=[],R=Math.max(...groups.map(g=>g.length));
+  for(let i=0;i<R;i++)groups.forEach((g,k)=>{if(g[i])picks.push({g:k,name:g[i].name,players:g[i].players,seed:false,fixed:false,manual:true})});
+  const F=$('drawForm');
+  shownD=picks.length;
+  saveDraw({cat:curCat,manual:true,picks,ng,shown:picks.length,at:Date.now(),made:false,opts:{c0:Math.max(1,+F.elements.c0.value||1),dbl:F.elements.dbl.value==='1',...ruleFor('group'),courts:Math.max(1,Math.min(20,+F.elements.courts.value||1))}});
+  $('manBox').open=false;toast(`Đã lưu ${ng} bảng, ${picks.length} cặp`);location.hash='boc-tham';
+});
 $('drawForm').addEventListener('submit',e=>{
   e.preventDefault();if(!dref)return toast('Chưa kết nối dữ liệu');
   const f=new FormData(e.target);const teams=parseTeams(f.get('teams'));const g=+f.get('ng')||1;
