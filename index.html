@@ -126,6 +126,7 @@ textarea{font-family:inherit;font-size:16px;line-height:1.5;border:1px solid var
 .ln{font:700 22px/1.1 "Be Vietnam Pro",system-ui,sans-serif;overflow-wrap:anywhere}
 .ln svg{vertical-align:-2px;margin-left:6px}
 .lg{font:700 15px "Be Vietnam Pro",system-ui,sans-serif;color:#10213a;background:#e9eef6;border-radius:6px;padding:0 7px;white-space:nowrap}
+.lf .fin{color:var(--lime,#d6ef45);font-weight:800}
 .lp{font:800 44px/1 "Be Vietnam Pro",system-ui,sans-serif;min-width:1.3em;text-align:right;font-variant-numeric:tabular-nums}
 .lf{display:flex;justify-content:space-between;gap:8px;color:#b9c8de;font-size:13px;margin-top:6px}
 .lf span:last-child{color:var(--ball);font-weight:600;white-space:nowrap}
@@ -234,6 +235,26 @@ form.cats{grid-template-columns:1fr}
 .st td.tc{vertical-align:middle;padding-left:10px}.tact{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}.rpT{min-height:32px;padding:0 10px;font-size:12px;background:transparent;color:var(--court);border:1px solid var(--line);white-space:nowrap}
 .rmT{min-height:32px;padding:0 10px;font-size:12px;background:transparent;color:#e5484d;border:1px solid rgba(229,72,77,.45);white-space:nowrap}
 .curcat{display:grid;gap:4px;font-weight:700;font-size:14px;margin:0 0 12px;max-width:520px}.curcat select{font-weight:700;border:2px solid var(--court)}
+.prf .chk{display:flex;gap:8px;align-items:center;font-weight:500;align-self:end;min-height:44px}.prf .chk input{min-height:auto;width:20px;height:20px}
+#printArea{display:none}
+@media print{
+ @page{size:A4 landscape;margin:9mm}
+ body{background:#fff!important;color:#000!important}
+ body>*:not(#printArea){display:none!important}
+ #printArea{display:block;font:12pt/1.3 "Be Vietnam Pro",Arial,sans-serif;color:#000}
+ .pg{page-break-after:always;break-after:page}
+ .pg:last-child{page-break-after:auto;break-after:auto}
+ .ph{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;border-bottom:2px solid #000;padding-bottom:6px;margin-bottom:6px}
+ .ph b{font-size:13pt}.pc{font:900 26pt/1 "Be Vietnam Pro",Arial,sans-serif;border:3px solid #000;padding:4px 14px;white-space:nowrap}
+ .pm{display:flex;flex-wrap:wrap;gap:4px 24px;font-size:11pt;margin:4px 0 8px}
+ .pt{width:100%;border-collapse:collapse;table-layout:fixed}
+ .pt th,.pt td{border:1px solid #000;padding:4px 6px;vertical-align:middle;text-align:left}
+ .pt th{background:#eee!important;font-size:10pt;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ .pt td{height:21mm;font-size:11pt}
+ .pt td span{display:block;white-space:nowrap;line-height:1.45;padding:1px 0}
+ .pt .n{width:9mm;text-align:center;font-weight:700}.pt .r{width:36mm;font-size:10pt;line-height:1.35}.pt .r small{font-size:8.5pt}.pt .s{width:40mm;font-size:10pt}.pt .k{width:36mm}
+ .pn{font-size:10pt;margin-top:6px;display:flex;justify-content:space-between}
+}
 .lut{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:10px;margin:-10px 0 30px}.lut div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.lut b{display:block;font-size:13px;color:var(--mut);font-weight:700}.lut span{font-weight:800;font-size:16px}
 .tle{margin-bottom:24px}.tle h3{font-size:22px;margin:4px 0 8px}.tle ol{margin:0;padding-left:22px;display:grid;gap:6px;font-size:15px;line-height:1.5}
 @media(max-width:480px){.nr{grid-template-columns:1fr!important;gap:6px!important}.nr i{width:auto;height:1px;align-self:auto}.nr>span:last-child,.nr>span:last-child>span{text-align:left}}
@@ -296,6 +317,15 @@ form.cats{grid-template-columns:1fr}
   </div>
   <div class="cf" id="cf" aria-label="Lọc theo sân"></div>
   <div class="list" id="list"></div>
+  <section id="printSec" hidden style="margin-top:32px">
+   <h2>In biên bản ký xác nhận</h2>
+   <form id="prForm" class="prf">
+    <p class="note full" style="margin:0">Mỗi sân 1 trang A4 ngang: các trận theo thứ tự đánh, ô ghi tỉ số, chữ ký VĐV hai đội và trọng tài. Phát cho trọng tài từng sân.</p>
+    <label>Sân<select id="prCourt"></select></label>
+    <label class="chk"><input type="checkbox" id="prDone"> Gồm cả trận đã đấu (in kèm tỉ số)</label>
+    <button class="full" type="submit">In biên bản</button>
+   </form>
+  </section>
   <section id="resetSec" hidden style="margin-top:32px">
    <h2>Làm giải mới</h2>
    <form id="resetForm" class="rst" autocomplete="off">
@@ -317,11 +347,11 @@ form.cats{grid-template-columns:1fr}
     <label>Hình thức<select name="dbl"><option value="1">Đánh đôi</option><option value="0">Đánh đơn</option></select></label>
     <label>Giai đoạn<select name="stage" id="stageSel"><option value="group">Vòng bảng</option><option value="qf">Tứ kết</option><option value="semi">Bán kết</option><option value="final">Chung kết</option></select></label>
     <p class="note" id="stageHint" style="margin:0;align-self:end"></p>
-    <p class="note full" style="margin:0">Luật điểm lấy theo giai đoạn (cài ở tab Bốc thăm → Luật thi đấu). Gõ “Bán kết…”/“Chung kết” ở ô Vòng, giai đoạn tự chọn theo.</p><label>Giao bóng trước<select name="first"><option value="a">Đội A</option><option value="b">Đội B</option></select></label>
+    <p class="note full" style="margin:0">Luật điểm lấy theo giai đoạn (cài ở tab Bốc thăm → Luật thi đấu). Gõ “Bán kết…”/“Chung kết” ở ô Vòng, giai đoạn tự chọn theo.</p><input type="hidden" name="first" value="a">
     <button class="full" type="submit">Thêm trận</button>
    </form>
   </section>
-  <p class="note">Tính điểm theo luật giao bóng truyền thống: chỉ đội giao bóng được ghi điểm, vòng bảng chạm 11 không cách (10-10 thì ai ghi điểm tiếp là thắng); từ bán kết chạm 15 không cách; chung kết chọn 1 trận hoặc 3 trận thắng 2. Đánh đôi bắt đầu mỗi trận ở “0-0-2”.</p>
+  <p class="note">Tính điểm đơn giản: đội nào ghi điểm thì bấm +1 cho đội đó, đọc điểm dạng 0-0. Vòng bảng chạm 11 không cách (10-10 thì ai ghi điểm tiếp là thắng); luật từng vòng cài ở mục Luật thi đấu.</p>
   </div>
   <div id="pChia">
   <div class="entry" id="drawEntry" hidden><b id="drawInfo">Bốc thăm chia bảng</b><button id="openStage">Mở màn hình bốc thăm</button><button id="clearDraw" class="clr" hidden>Xoá kết quả bốc thăm</button></div>
@@ -381,6 +411,7 @@ form.cats{grid-template-columns:1fr}
 <input id="rIn" maxlength="90" required placeholder="Tên VĐV 1 / Tên VĐV 2" aria-label="Đội thay thế">
 <label style="display:flex;gap:8px;align-items:flex-start;font-weight:500;font-size:14px"><input type="checkbox" id="rReset" style="min-height:auto;width:20px;height:20px;margin-top:2px"> Đặt lại các trận đã đấu của đội cũ thành chưa đấu (đội mới đánh lại)</label>
 <div class="acts"><button type="button" id="rCancel">Huỷ</button><button type="submit">Thay</button></div></form></div>
+<div id="printArea" aria-hidden="true"></div>
 <div class="msg" id="msg" role="status"></div>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -411,18 +442,19 @@ const need=m=>Math.floor((m.bestOf||1)/2)+1;
 const ball='<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7.5" fill="#d6ef45"/><g fill="#9bb22a"><circle cx="5" cy="5" r="1.1"/><circle cx="10.5" cy="4.6" r="1.1"/><circle cx="8" cy="8.4" r="1.1"/><circle cx="4.6" cy="11" r="1.1"/><circle cx="11.3" cy="10.8" r="1.1"/></g></svg>';
 
 function snapState(m){return JSON.stringify({srv:m.srv,sn:m.sn,sc:m.sc,games:m.games,status:m.status,first:m.first})}
-function withHist(m){const n=JSON.parse(JSON.stringify(m));delete n.id;n.hist=(n.hist||[]).concat(snapState(m)).slice(-40);n.t=Date.now();return n}
+function withHist(m){const n=JSON.parse(JSON.stringify(m));delete n.id;delete n.brk;n.hist=(n.hist||[]).concat(snapState(m)).slice(-40);n.t=Date.now();return n}
 function checkGame(n){
   const [x,y]=n.sc;
   if((Math.max(x,y)>=n.to&&Math.abs(x-y)>=(n.winBy||2))||(n.cap>n.to&&Math.max(x,y)>=n.cap)){
-    n.games=(n.games||[]).concat([[x,y]]);n.sc=[0,0];
+    n.games=(n.games||[]).concat([[x,y]]);n.sc=[0,0];n.brk=true;
     const w=wins(n);
-    if(Math.max(w[0],w[1])>=need(n)){n.status='done';toast('Trận đấu kết thúc')}
+    if(Math.max(w[0],w[1])>=need(n)){n.status='done';n.fin=Date.now();toast('Trận đấu kết thúc')}
     else{n.first=oth(n.first);n.srv=n.first;n.sn=n.dbl?2:1;toast('Hết trận — sang trận '+(n.games.length+1))}
   }
 }
 function rally(m,w){
   const n=withHist(m);if(n.status!=='live')n.status='live';
+  n.sc[ix(w)]++;checkGame(n);return n;
   if(w===n.srv){n.sc[ix(w)]++;checkGame(n)}
   else if(n.dbl&&n.sn===1){n.sn=2}
   else{n.srv=oth(n.srv);n.sn=1}
@@ -450,16 +482,18 @@ function saveOp(id,f){
   return true;
 }
 
+/* Điểm hiển thị: vừa hết trận/ván thì giữ điểm cuối (vd 11-7) thay vì nhảy về 0-0 */
+const shownSc=m=>((m.status==='done'||m.brk)&&(m.games||[]).length)?m.games[m.games.length-1]:(m.sc||[0,0]);
 function scoreRows(m,big){
   const w=wins(m);
   return ['a','b'].map(t=>{
     const T=m[t]||{};const srv=m.status==='live'&&m.srv===t;
-    const gs=(m.games||[]).map(g=>{const mine=g[ix(t)],their=g[ix(oth(t))];return `<span class="${mine>their?'w':''}">${esc(mine)}</span>`}).join('');
+    const hold=(m.status==='done'||m.brk)&&(m.games||[]).length;const gs=(m.games||[]).slice(0,hold?-1:undefined).map(g=>{const mine=g[ix(t)],their=g[ix(oth(t))];return `<span class="${mine>their?'w':''}">${esc(mine)}</span>`}).join('');
     return `<div class="row"><div class="sw" style="background:var(--${t})"></div>
-     <div><div class="tn vn">${lines(nm(m,t))}${srv?`<span class="srv">${ball}${m.dbl?'Người giao '+esc(m.sn):'Giao bóng'}</span>`:''}</div>
+     <div><div class="tn vn">${lines(nm(m,t))}</div>
      ${m.bestOf>1?`<div class="pl">Trận thắng: ${w[ix(t)]}</div>`:''}</div>
      <div class="gs" aria-label="Điểm các trận trước">${gs}</div>
-     <div class="pt" aria-label="Điểm trận hiện tại">${esc(m.sc?.[ix(t)]??0)}</div></div>`;
+     <div class="pt" aria-label="Điểm trận hiện tại">${esc(shownSc(m)[ix(t)]??0)}</div></div>`;
   }).join('');
 }
 function statusPill(m){return m.status==='live'?'<span class="pill live">Trực tiếp</span>':m.status==='done'?'<span class="pill done">Kết thúc</span>':'<span class="pill up">Sắp đấu</span>'}
@@ -472,15 +506,15 @@ function renderBoard(){
   if(!m){b.innerHTML='<div class="empty">Không tìm thấy trận này — có thể đã bị xoá.</div>';return}
   sel=m.id;
   const s=m.sc||[0,0];const si=ix(m.srv);
-  const call=m.status==='live'?`<div class="call">Đọc điểm: <b>${esc(s[si])}-${esc(s[1-si])}${m.dbl?'-'+esc(m.sn):''}</b><span>Trận ${esc((m.games||[]).length+1)} · ${esc(ruleTxt(m))}${m.bestOf>1?' · 3 trận thắng 2':''}</span></div>`:'';
+  const call=m.status==='live'?`<div class="call">Đọc điểm: <b>${esc(s[0])}-${esc(s[1])}</b><span>Trận ${esc((m.games||[]).length+1)} · ${esc(ruleTxt(m))}${m.bestOf>1?' · 3 trận thắng 2':''}</span></div>`:'';
   let ref='';
   if(refOn&&canWrite){
     const an=esc(nm(m,'a')),bn=esc(nm(m,'b'));
     ref=m.status==='done'?`<div class="ref"><div class="small"><button data-act="undo">Hoàn tác pha cuối</button>${adm()?'<button data-act="del" class="dg">Xoá trận</button>':''}</div></div>`:
-    `<div class="ref"><div class="big"><button class="ba" data-act="ra">${an}<br>thắng pha bóng</button><button class="bb" data-act="rb">${bn}<br>thắng pha bóng</button></div>
-     <div class="small"><button data-act="undo">Hoàn tác</button><button data-act="so">Đổi giao bóng</button><button data-act="a+">A +1</button><button data-act="b+">B +1</button><button data-act="a-">A −1</button><button data-act="b-">B −1</button>
+    `<div class="ref"><div class="big"><button class="ba" data-act="ra">${an}<br>+1 điểm</button><button class="bb" data-act="rb">${bn}<br>+1 điểm</button></div>
+     <div class="small"><button data-act="undo">Hoàn tác</button><button data-act="a-">A −1</button><button data-act="b-">B −1</button>
      ${m.status==='up'?'<button data-act="start">Bắt đầu trận</button>':'<button data-act="end">Kết thúc trận</button>'}${adm()?'<button data-act="court">Đổi sân</button><button data-act="del" class="dg">Xoá</button>':''}</div>
-     <div class="hint">Bấm đội thắng pha bóng: trang tự cộng điểm, chuyển người giao và đổi giao bóng theo luật.</div></div>`;
+     <div class="hint">Bấm vào đội ghi điểm để cộng 1 điểm. Bấm nhầm thì dùng Hoàn tác hoặc −1.</div></div>`;
   }
   b.innerHTML=`<div class="meta">${statusPill(m)}<span>${esc(m.court||'')}</span><span>${esc(m.round||'')}</span><span>${esc(catName(catOf(m)))}</span></div>${scoreRows(m)}${call}${ref}`;
 }
@@ -499,24 +533,26 @@ function renderList(){
 const cName=m=>(m.court||'').trim()||'Chưa xếp sân';
 const byCourt=(a,b)=>a.localeCompare(b,'vi',{numeric:true});
 function liveCard(m){
-  const w=wins(m),s=m.sc||[0,0],si=ix(m.srv);
-  const row=t=>`<div class="lr"><i style="background:var(--${t})"></i><span class="ln vn">${linesX(nm(m,t),m.srv===t?ball:'')}</span>${m.bestOf>1?`<span class="lg">${w[ix(t)]}</span>`:'<span></span>'}<b class="lp">${esc(s[ix(t)])}</b></div>`;
-  return `<button class="lc" data-id="${esc(m.id)}" aria-label="Xem chi tiết trận ${esc(nm(m,'a'))} gặp ${esc(nm(m,'b'))}"><div class="lm"><span>${CATS.length>1?`<span class="ctag">${esc(catName(catOf(m)))}</span>`:''}${esc(m.round||'')}</span></div>${row('a')}${row('b')}<div class="lf"><span>Trận ${esc((m.games||[]).length+1)} · ${esc(ruleTxt(m))}</span><span>${esc(s[si])}-${esc(s[1-si])}${m.dbl?'-'+esc(m.sn):''}</span></div></button>`;
+  const w=wins(m),s=shownSc(m),si=ix(m.srv),done=m.status==='done',brk=done||m.brk;
+  const row=t=>`<div class="lr"><i style="background:var(--${t})"></i><span class="ln vn">${linesX(nm(m,t),'')}</span>${m.bestOf>1?`<span class="lg">${w[ix(t)]}</span>`:'<span></span>'}<b class="lp">${esc(s[ix(t)])}</b></div>`;
+  return `<button class="lc" data-id="${esc(m.id)}" aria-label="Xem chi tiết trận ${esc(nm(m,'a'))} gặp ${esc(nm(m,'b'))}"><div class="lm"><span>${CATS.length>1?`<span class="ctag">${esc(catName(catOf(m)))}</span>`:''}${esc(m.round||'')}</span></div>${row('a')}${row('b')}<div class="lf"><span>Trận ${esc((m.games||[]).length+(brk?0:1))} · ${esc(ruleTxt(m))}</span><span>${brk?(done?'<b class="fin">Kết thúc</b>':'Hết trận '+esc((m.games||[]).length)):esc(s[0])+'-'+esc(s[1])}</span></div></button>`;
 }
 function renderLive(){
   const G=$('lgrid');if(!got)return;
   const by=new Map();
-  matches.filter(m=>m.status!=='done').forEach(m=>{const c=cName(m);if(!by.has(c))by.set(c,[]);by.get(c).push(m)});
+  const RECENT=5*60*1000,now=Date.now();
+  matches.filter(m=>m.status!=='done'||(m.fin&&now-m.fin<RECENT)).forEach(m=>{const c=cName(m);if(!by.has(c))by.set(c,[]);by.get(c).push(m)});
   const courts=[...by.keys()].sort(byCourt);const lv=matches.filter(m=>m.status==='live').length;
   $('liveCnt').textContent=courts.length?`${lv} trận đang đánh · ${courts.length} sân · bấm để xem chi tiết`:'';
   if(!courts.length){G.innerHTML='<div class="none">Chưa có trận nào đang đánh hoặc sắp đấu.</div>';return}
   G.innerHTML=courts.map(c=>{
-    const ms=by.get(c).sort((x,y)=>(x.order??0)-(y.order??0));const live=ms.filter(m=>m.status==='live'),up=ms.filter(m=>m.status==='up');
+    const ms=by.get(c).sort((x,y)=>(x.order??0)-(y.order??0));const live=ms.filter(m=>m.status==='live'),up=ms.filter(m=>m.status==='up');const just=live.length?[]:ms.filter(m=>m.status==='done').sort((x,y)=>y.fin-x.fin).slice(0,1);
     const cn=CATS.length>1?[...new Set(ms.map(m=>catName(catOf(m))))]:[];
-    return `<section class="cc"><div class="ch"><h3>${esc(c)}${cn.length?`<small class="cct">${cn.map(esc).join(' · ')}</small>`:''}</h3><span class="chr">${live.length?'<span class="pill live">Đang đánh</span>':'<span class="pill up">Sân trống</span>'}${adm()?`<button class="rn" data-rn="${esc(c)}">Đổi tên</button>`:''}</span></div>${live.map(liveCard).join('')}`+
+    return `<section class="cc"><div class="ch"><h3>${esc(c)}${cn.length?`<small class="cct">${cn.map(esc).join(' · ')}</small>`:''}</h3><span class="chr">${live.length?'<span class="pill live">Đang đánh</span>':just.length?'<span class="pill done">Vừa kết thúc</span>':'<span class="pill up">Sân trống</span>'}${adm()?`<button class="rn" data-rn="${esc(c)}">Đổi tên</button>`:''}</span></div>${live.concat(just).map(liveCard).join('')}`+
     (up.length?`<div class="nx"><div class="nxh">Tiếp theo</div>${up.slice(0,3).map(m=>`<button class="nr" data-id="${esc(m.id)}"><span class="vn">${lines(nm(m,'a'))}</span><i>gặp</i><span class="vn">${lines(nm(m,'b'))}</span></button>`).join('')}${up.length>3?`<div class="nxh">+${up.length-3} trận nữa</div>`:''}</div>`:'')+'</section>';
   }).join('');
 }
+setInterval(()=>{if(typeof renderLive==='function'&&got)renderLive()},30000);
 let gsel=null;
 const grpOf=m=>{const x=/Bảng\s+([A-Za-z0-9]+)/i.exec(m.round||'');return x?x[1].toUpperCase():null};
 const tKey=(m,t)=>((m[t]?.name||'').trim()||(m[t]?.players||'').trim()).toLowerCase();
@@ -575,6 +611,7 @@ function render(){
   $('refBtn').hidden=!canWrite;$('refBtn').textContent=refOn&&canWrite?'Thoát chế độ trọng tài':'Chế độ trọng tài';$('refBtn').setAttribute('aria-pressed',String(refOn&&canWrite));
   $('addSec').hidden=!adm();
   $('resetSec').hidden=!adm();
+  $('printSec').hidden=!adm();if(adm())fillPrCourts();
   $('drawSec').hidden=!adm();
   $('rulesSec').hidden=!adm();
   $('catSec').hidden=!adm();
@@ -826,7 +863,7 @@ $('board').addEventListener('click',e=>{
   else if(a==='a+')f=x=>adj(x,'a',1);else if(a==='a-')f=x=>adj(x,'a',-1);
   else if(a==='b+')f=x=>adj(x,'b',1);else if(a==='b-')f=x=>adj(x,'b',-1);
   else if(a==='start')f=x=>{const n=withHist(x);n.status='live';return n};
-  else if(a==='end')f=x=>{const n=withHist(x);if(n.sc[0]||n.sc[1]){n.games=(n.games||[]).concat([n.sc]);n.sc=[0,0]}n.status='done';return n};
+  else if(a==='end')f=x=>{const n=withHist(x);if(n.sc[0]||n.sc[1]){n.games=(n.games||[]).concat([n.sc]);n.sc=[0,0]}n.status='done';n.fin=Date.now();return n};
   else if(a==='court'){openCourt('match',m.id);return}
   else if(a==='del'){if(!adm())return;
     if(confirmDel[m.id]){delete confirmDel[m.id];matches=matches.filter(x=>x.id!==m.id);sel=null;location.hash='';render();chain=chain.then(()=>col.doc(m.id).delete()).catch(()=>toast('Chưa xoá được'));return}
@@ -1013,6 +1050,25 @@ $('catForm').addEventListener('submit',e=>{
   const had=new Set(CATS.map(c=>c.id));CATS=list;catDraft=null;const added=list.find(c=>!had.has(c.id));if(added){setCat(added.id);toast('Đã chuyển sang nội dung mới: '+added.name)}else if(!CATS.some(c=>c.id===curCat))setCat(CATS[0].id);
   chain=chain.then(()=>catsRef.set({list,t:Date.now()})).then(()=>toast('Đã lưu nội dung thi đấu')).catch(()=>toast('Chưa lưu được'));
   document.activeElement&&document.activeElement.blur();paintCats();render();
+});
+/* ---------- In biên bản ký xác nhận theo sân ---------- */
+function fillPrCourts(){const S=$('prCourt');if(!S||document.activeElement===S)return;const cs=[...new Set(matches.filter(inCat).map(cName))].sort(byCourt);
+  const v=S.value;const html='<option value="">Tất cả sân của nội dung này</option>'+cs.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');if(S.dataset.h!==html){S.innerHTML=html;S.dataset.h=html;S.value=cs.includes(v)?v:''}}
+$('prForm').addEventListener('submit',e=>{
+  e.preventDefault();if(!adm())return;const only=$('prCourt').value,withDone=$('prDone').checked;
+  const cs=[...new Set(matches.filter(inCat).map(cName))].sort(byCourt).filter(c=>!only||c===only);
+  const C=curC(),pages=[];
+  cs.forEach(c=>{const ms=matches.filter(m=>inCat(m)&&cName(m)===c&&(withDone||m.status!=='done')).sort((x,y)=>(x.order??0)-(y.order??0));if(!ms.length)return;
+    const rows=ms.map((m,i)=>{const bo=m.bestOf||1,g=m.games||[];
+      const sc=m.status==='done'&&g.length?esc(g.map(x=>x[0]+' – '+x[1]).join(', ')):Array.from({length:bo},(_,k)=>(bo>1?`Trận ${k+1}: `:'')+'.......... – ..........').join('<br>');
+      return `<tr><td class="n">${i+1}</td><td class="r">${esc(m.round||'')}<br><small>${esc(rtx(m.to,m.winBy||2,bo))}</small></td><td>${lines(nm(m,'a'))}</td><td>${lines(nm(m,'b'))}</td><td class="s">${sc}</td><td class="k"></td><td class="k"></td></tr>`}).join('');
+    pages.push(`<section class="pg"><div class="ph"><div><b>GIẢI PICKLEBALL TRANH CUP PEUGEOT · THACO AUTO BẮC NINH</b><br>Ngày 28.11.2026 · Sân Pickleball Kinh Bắc, Bắc Ninh</div><div class="pc">${esc(c)}</div></div>
+      <div class="pm"><span><b>Nội dung:</b> ${esc(C.name)}</span><span><b>Trọng tài:</b> ......................................................</span><span><b>Số trận:</b> ${ms.length}</span></div>
+      <table class="pt"><thead><tr><th class="n">#</th><th class="r">Vòng / Bảng</th><th>Đội A</th><th>Đội B</th><th class="s">Tỉ số</th><th class="k">Đội A ký</th><th class="k">Đội B ký</th></tr></thead><tbody>${rows}</tbody></table>
+      <div class="pn"><span>VĐV hai đội ký xác nhận tỉ số ngay sau khi kết thúc trận. Trọng tài khoanh tròn tên đội thắng.</span><span>Trọng tài ký: ..............................</span></div></section>`)});
+  if(!pages.length)return toast('Không có trận nào để in');
+  $('printArea').innerHTML=pages.join('');
+  try{window.print()}catch(x){toast('Trình duyệt không cho in ở đây — mở trang trên web GitHub để in')}
 });
 $('addForm').addEventListener('submit',e=>{
   e.preventDefault();if(!col||!adm())return;
