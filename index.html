@@ -622,7 +622,7 @@ function renderStand(){
     return `<button class="rs" data-id="${esc(m.id)}"><span class="vn ${win==='a'?'wn':''}">${lines(nm(m,'a'))}</span><span class="rsc">${mid}</span><span class="vn ${win==='b'?'wn':''}">${lines(nm(m,'b'))}</span></button>`}).join(''):'<p class="note">Chưa có kết quả.</p>'}</div>`;
 }
 function render(){
-  renderLive();renderBoard();renderStand();renderList();renderTong();
+  renderLive();renderBoard();renderStand();renderList();renderTong();try{autoKO()}catch(e){console.warn(e)}
   $('refBtn').hidden=!canWrite;$('refBtn').textContent=refOn&&canWrite?'Thoát chế độ trọng tài':'Chế độ trọng tài';$('refBtn').setAttribute('aria-pressed',String(refOn&&canWrite));
   $('addSec').hidden=!adm();
   $('resetSec').hidden=!adm();
@@ -967,7 +967,8 @@ function mkMatch(A,B,round,stage){const R=ruleFor(stage);return {id:'sim-'+round
 const grpRule=()=>{const R=RULES.group||DEF_RULES.group;return rtx(R.to,R.wb,R.bo)};
 const rtx=(to,wb,bo)=>`Chạm ${to} · ${wb===1?'0 cách':'cách 2'} · ${bo===3?'3 trận thắng 2':'1 trận'}`;
 function koBox(m,label,stg){const R=RULES[stg]||DEF_RULES[stg]||DEF_RULES.semi;const rt=m?rtx(m.to,m.winBy||2,m.bestOf||1):rtx(R.to,R.wb,R.bo);
-  if(!m)return `<div class="kb empty"><div class="kl"><span>${esc(label)}</span><span class="kr">${esc(rt)}</span></div><div class="kt"><span>Chờ xác định</span></div><div class="kt"><span>Chờ xác định</span></div></div>`;
+  if(!m){const sl=koBox.slot&&koBox.slot[label.split(' · ')[0]];const tx=(sd,lb)=>sd?`<span class="vn">${lines(sName(sd))}</span>`:`<span>${esc(lb||'Chờ xác định')}</span>`;
+    return `<div class="kb empty"><div class="kl"><span>${esc(label)}</span><span class="kr">${esc(rt)}</span></div><div class="kt">${tx(sl&&sl.A,sl&&sl.la)}</div><div class="kt">${tx(sl&&sl.B,sl&&sl.lb)}</div></div>`}
   const win=winnerOf(m),g=m.games||[];
   const row=t=>`<div class="kt ${win===t?'w':''}"><span class="vn">${lines(nm(m,t))}</span><b>${m.status==='live'?esc((m.sc||[0,0])[ix(t)]):esc(g.map(x=>x[ix(t)]).join(' · '))}</b></div>`;
   const click=!simOn&&!String(m.id).startsWith('sim');
@@ -1005,6 +1006,51 @@ function theLe(ng){
   const st=[['group','Vòng bảng'],ng===8?['qf','Tứ kết']:null,['semi','Bán kết · Tranh hạng ba'],['final','Chung kết']].filter(Boolean);
   return `<div class="lut">${st.map(([k,n])=>`<div><b>${n}</b><span>${t(k)}</span></div>`).join('')}</div>`;
 }
+const KO_CREATE=(id,n)=>db.runTransaction(async tx=>{const ref=col.doc(id);const s=await tx.get(ref);if(s.exists)return false;tx.set(ref,n);return true});
+/* ---------- Tự động xếp đội vào vòng loại trực tiếp ----------
+   Bảng nào đấu xong thì đội Nhất (Nhì) hiện ngay vào ô tứ kết / bán kết.
+   Khi admin đang mở trang: đủ 2 bảng (hoặc 2 trận) của một cặp đấu là tự tạo trận đó, không cần bấm nút.
+   Mỗi trận vòng sau có mã cố định (ko-<nội dung>-<vòng>) nên nhiều máy admin mở cùng lúc cũng không tạo trùng. */
+const sName=s=>s?((s.name||'').trim()||(s.players||'').trim()):'';
+const grpDoneOf=ms=>ms.length>0&&ms.every(m=>m.status==='done'&&winnerOf(m));
+function koSlots(L){
+  const G=new Map();L.forEach(m=>{const g=grpOf(m);if(!g)return;if(!G.has(g))G.set(g,[]);G.get(g).push(m)});
+  const gs=[...G.keys()].sort(byCourt),ng=gs.length;
+  const info=gs.map(g=>{const ms=G.get(g),done=grpDoneOf(ms),t=rowsOf(ms);return {g,done,W:done&&t[0]?t[0].side:null,S:done&&t[1]?t[1].side:null}});
+  const byR=rd=>L.find(m=>(m.round||'').trim()===rd);
+  const wOf=m=>m&&m.status==='done'&&winnerOf(m)?winSide(m):null,lOf=m=>m&&m.status==='done'&&winnerOf(m)?loseSide(m):null;
+  const S=[];/* {key,rd,stage,A,B,la,lb} */
+  const gW=(i)=>[info[i]&&info[i].W,'Nhất '+(info[i]?info[i].g:'?')],gS=(i)=>[info[i]&&info[i].S,'Nhì '+(info[i]?info[i].g:'?')];
+  const add=(key,rd,stage,a,b)=>S.push({key,rd,stage,A:a[0],B:b[0],la:a[1],lb:b[1],m:byR(rd)});
+  if(ng===8){
+    for(let k=0;k<4;k++)add('qf'+(k+1),'Tứ kết '+(k+1),'qf',gW(2*k),gW(2*k+1));
+    const q=k=>byR('Tứ kết '+k);
+    add('sf1','Bán kết 1','semi',[wOf(q(1)),'Thắng TK1'],[wOf(q(2)),'Thắng TK2']);
+    add('sf2','Bán kết 2','semi',[wOf(q(3)),'Thắng TK3'],[wOf(q(4)),'Thắng TK4']);
+  }else if(ng===4){
+    add('sf1','Bán kết 1','semi',gW(0),gW(1));add('sf2','Bán kết 2','semi',gW(2),gW(3));
+  }else if(ng===2){
+    add('sf1','Bán kết 1','semi',gW(0),gS(1));add('sf2','Bán kết 2','semi',gW(1),gS(0));
+  }else return {ng,slots:[]};
+  const s1=byR('Bán kết 1'),s2=byR('Bán kết 2');
+  add('f','Chung kết','final',[wOf(s1),'Thắng BK1'],[wOf(s2),'Thắng BK2']);
+  add('h3','Tranh hạng ba','semi',[lOf(s1),'Thua BK1'],[lOf(s2),'Thua BK2']);
+  return {ng,slots:S};
+}
+const koPending=new Set();
+function autoKO(){
+  if(!adm()||!col||simOn||!got)return;
+  CATS.forEach(c=>{
+    const L=matches.filter(m=>catOf(m)===c.id);if(!L.length)return;
+    const own=[...new Set(L.filter(m=>grpOf(m)).map(m=>m.court).filter(Boolean))].sort(byCourt);
+    koSlots(L).slots.forEach((s,i)=>{
+      if(s.m||!s.A||!s.B)return;const id=('ko-'+c.id+'-'+s.key).replace(/[^\w-]/g,'');if(koPending.has(id)||matches.some(m=>m.id===id))return;
+      koPending.add(id);const R=ruleFor(s.stage),base=Date.now();
+      const n={a:{name:s.A.name||'',players:s.A.players||''},b:{name:s.B.name||'',players:s.B.players||''},court:own.length?own[i%own.length]:'Sân '+nextFreeCourt(),round:s.rd,stage:s.stage,cat:c.id,dbl:true,to:R.to,winBy:R.winBy,cap:0,bestOf:R.bo,first:'a',srv:'a',sn:2,sc:[0,0],games:[],status:'up',hist:[],order:base,t:base};
+      KO_CREATE(id,n).then(ok=>{if(ok)toast(`Đã tự tạo trận ${s.rd} (${c.name})`)}).catch(()=>{koPending.delete(id)});
+    });
+  });
+}
 function renderTong(){
   const box=$('tong');if(!box||$('pTong').hidden||!got)return;
   $('simBtn').setAttribute('aria-pressed',String(simOn));$('simBtn').textContent=simOn?'Tắt xem thử':'Xem thử khi đủ kết quả';
@@ -1013,6 +1059,7 @@ function renderTong(){
   const G=new Map();L.forEach(m=>{const g=grpOf(m);if(!g)return;if(!G.has(g))G.set(g,[]);G.get(g).push(m)});
   const gs=[...G.keys()].sort(byCourt),tables=gs.map(g=>[g,rowsOf(G.get(g))]);
   const qf=L.filter(isQF).sort(byRound),semis=L.filter(isSemi).sort(byRound),fin=L.find(isFinal),third=L.find(isThird);
+  koBox.slot={};try{koSlots(L).slots.forEach(s=>{koBox.slot[s.rd]=s})}catch(e){}
   const plan=simOn?null:nextPlan(MC);
   const nb=$('nextBtn');
   nb.hidden=!(adm()&&!simOn&&plan&&!plan.end);
