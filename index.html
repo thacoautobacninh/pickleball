@@ -441,6 +441,18 @@ const wins=m=>{const w=[0,0];(m.games||[]).forEach(g=>{w[g[0]>g[1]?0:1]++});retu
 const need=m=>Math.floor((m.bestOf||1)/2)+1;
 const ball='<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7.5" fill="#d6ef45"/><g fill="#9bb22a"><circle cx="5" cy="5" r="1.1"/><circle cx="10.5" cy="4.6" r="1.1"/><circle cx="8" cy="8.4" r="1.1"/><circle cx="4.6" cy="11" r="1.1"/><circle cx="11.3" cy="10.8" r="1.1"/></g></svg>';
 
+/* Ban tổ chức sửa tỉ số trực tiếp: nhập "11-7" hoặc "11-7, 9-11, 11-5". Thêm * ở cuối nếu trận CHƯA kết thúc. */
+function editScore(m){
+  const cur=(m.games||[]).map(g=>g[0]+'-'+g[1]).concat(m.status!=='done'&&((m.sc||[0,0])[0]||(m.sc||[0,0])[1])?[m.sc[0]+'-'+m.sc[1]+'*']:[]).join(', ');
+  const v=prompt('Sửa tỉ số ('+nm(m,'a')+' – '+nm(m,'b')+')\nNhập điểm Đội A-Đội B từng trận, ví dụ: 11-7  hoặc  11-7, 9-11, 11-5\nThêm dấu * ở cuối nếu trận CHƯA kết thúc.',cur);
+  if(v===null)return null;const open=/\*\s*$/.test(v);
+  const gs=v.replace(/\*/g,'').split(/[,;]/).map(x=>x.trim()).filter(Boolean).map(x=>{const p=x.match(/^(\d+)\s*[-–:]\s*(\d+)$/);return p?[+p[1],+p[2]]:null});
+  if(!gs.length||gs.some(g=>!g)){toast('Tỉ số chưa đúng dạng, ví dụ 11-7');return null}
+  return x=>{const n=withHist(x);
+    if(open){n.sc=gs.pop();n.games=gs;n.status='live';delete n.fin}
+    else{n.games=gs;n.sc=[0,0];n.status='done';n.fin=Date.now()}
+    toast('Đã sửa tỉ số');return n};
+}
 function snapState(m){return JSON.stringify({srv:m.srv,sn:m.sn,sc:m.sc,games:m.games,status:m.status,first:m.first})}
 function withHist(m){const n=JSON.parse(JSON.stringify(m));delete n.id;delete n.brk;n.hist=(n.hist||[]).concat(snapState(m)).slice(-40);n.t=Date.now();return n}
 function checkGame(n){
@@ -513,10 +525,10 @@ function renderBoard(){
   let ref='';
   if(refOn&&canWrite){
     const an=esc(nm(m,'a')),bn=esc(nm(m,'b'));
-    ref=m.status==='done'?`<div class="ref"><div class="small"><button data-act="undo">Hoàn tác pha cuối</button>${adm()?'<button data-act="del" class="dg">Xoá trận</button>':''}</div></div>`:
+    ref=m.status==='done'?`<div class="ref"><div class="small"><button data-act="undo">Hoàn tác pha cuối</button>${adm()?'<button data-act="edit">Sửa tỉ số</button><button data-act="del" class="dg">Xoá trận</button>':''}</div></div>`:
     `<div class="ref"><div class="big"><button class="ba" data-act="ra">${an}<br>+1 điểm</button><button class="bb" data-act="rb">${bn}<br>+1 điểm</button></div>
      <div class="small"><button data-act="undo">Hoàn tác</button><button data-act="a-">A −1</button><button data-act="b-">B −1</button>
-     ${m.status==='up'?'<button data-act="start">Bắt đầu trận</button>':'<button data-act="end">Kết thúc trận</button>'}${adm()?'<button data-act="court">Đổi sân</button><button data-act="del" class="dg">Xoá</button>':''}</div>
+     ${m.status==='up'?'<button data-act="start">Bắt đầu trận</button>':'<button data-act="end">Kết thúc trận</button>'}${adm()?'<button data-act="edit">Sửa tỉ số</button><button data-act="court">Đổi sân</button><button data-act="del" class="dg">Xoá</button>':''}</div>
      <div class="hint">Bấm vào đội ghi điểm để cộng 1 điểm. Bấm nhầm thì dùng Hoàn tác hoặc −1.</div></div>`;
   }
   b.innerHTML=`<div class="meta">${statusPill(m)}<span>${esc(m.court||'')}</span><span>${esc(m.round||'')}</span><span>${esc(catName(catOf(m)))}</span></div>${scoreRows(m)}${call}${ref}`;
@@ -868,6 +880,7 @@ $('board').addEventListener('click',e=>{
   else if(a==='start')f=x=>{const n=withHist(x);n.status='live';return n};
   else if(a==='end')f=x=>{const n=withHist(x);if(n.sc[0]||n.sc[1]){n.games=(n.games||[]).concat([n.sc]);n.sc=[0,0]}n.status='done';n.fin=Date.now();return n};
   else if(a==='court'){openCourt('match',m.id);return}
+  else if(a==='edit'){f=editScore(m);if(!f)return}
   else if(a==='del'){if(!adm())return;
     if(confirmDel[m.id]){delete confirmDel[m.id];matches=matches.filter(x=>x.id!==m.id);sel=null;location.hash='';render();chain=chain.then(()=>col.doc(m.id).delete()).catch(()=>toast('Chưa xoá được'));return}
     confirmDel[m.id]=1;b.textContent='Bấm lần nữa để xoá';setTimeout(()=>{delete confirmDel[m.id];renderBoard()},3000);return;
