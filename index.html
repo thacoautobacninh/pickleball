@@ -466,6 +466,9 @@ function undo(m){const h=(m.hist||[]).slice();if(!h.length)return null;const s=J
 
 let chain=Promise.resolve();
 function PATCH(id,fields){saveOp(id,x=>{const n=JSON.parse(JSON.stringify(x));delete n.id;Object.assign(n,fields);return n})}
+/* Firestore không cho lưu mảng lồng mảng (games:[[11,7]]), nên khi lưu đổi sang [{a:11,b:7}] và đọc ra đổi lại. */
+const decG=d=>{if(d&&Array.isArray(d.games))d.games=d.games.map(g=>Array.isArray(g)?g:[+g.a||0,+g.b||0]);return d};
+const encG=n=>{const o=Object.assign({},n);delete o.id;if(Array.isArray(o.games))o.games=o.games.map(g=>Array.isArray(g)?{a:g[0],b:g[1]}:g);return o};
 function saveOp(id,f){
   if(!col)return;
   const i=matches.findIndex(x=>x.id===id);
@@ -474,7 +477,7 @@ function saveOp(id,f){
      nên 2 trọng tài bấm cùng lúc không đè mất điểm của nhau. */
   chain=chain.then(()=>db.runTransaction(async tx=>{
     const ref=col.doc(id);const s=await tx.get(ref);if(!s.exists)return;
-    const n=f(Object.assign({id},s.data()));if(n)tx.set(ref,n);
+    const n=f(decG(Object.assign({id},s.data())));if(n)tx.set(ref,encG(n));
   })).catch(e=>{
     if(e&&e.code==='permission-denied'){setRef(false);toast('Phiên trọng tài đã hết — đăng nhập lại')}
     else toast('Chưa lưu được, thử lại nhé');
@@ -883,9 +886,12 @@ $('rulesForm').addEventListener('submit',e=>{
   for(const k in DEF_RULES)d[k]={to:+F.elements[k+'_to'].value,wb:+F.elements[k+'_wb'].value,bo:+F.elements[k+'_bo'].value};
   RULES=d;let n=0;
   chain=chain.then(()=>rulesRef.set(Object.assign({t:Date.now()},d))).catch(()=>toast('Chưa lưu được luật'));
-  matches.filter(m=>m.status==='up').forEach(m=>{const R=d[stageOf(m)];if(m.to===R.to&&(m.winBy||2)===R.wb&&m.bestOf===R.bo&&!m.cap)return;n++;
-    PATCH(m.id,{to:R.to,winBy:R.wb,cap:0,bestOf:R.bo,stage:stageOf(m)})});
-  chain=chain.then(()=>toast('Đã lưu luật'+(n?` · cập nhật ${n} trận chưa đấu`:'')));render();
+  let nl=0;
+  matches.filter(m=>m.status==='up'||m.status==='live').forEach(m=>{const R=d[stageOf(m)];if(m.to===R.to&&(m.winBy||2)===R.wb&&m.bestOf===R.bo&&!m.cap)return;
+    if(m.status==='up'){n++;PATCH(m.id,{to:R.to,winBy:R.wb,cap:0,bestOf:R.bo,stage:stageOf(m)});return}
+    /* Trận đang đánh: đổi luật và kiểm tra ngay, nếu tỉ số đã đủ thì tự kết thúc */
+    nl++;const upd=src=>{const x=JSON.parse(JSON.stringify(src));delete x.id;Object.assign(x,{to:R.to,winBy:R.wb,cap:0,bestOf:R.bo,stage:stageOf(m),t:Date.now()});if(x.status==='live')checkGame(x);return x};saveOp(m.id,upd)});
+  chain=chain.then(()=>toast('Đã lưu luật'+(n?` · ${n} trận chưa đấu`:'')+(nl?` · ${nl} trận đang đánh`:'')));render();
 });
 /* Xoá giải: chỉ lưu bản mã hoá (PBKDF2) của mật khẩu, không lưu mật khẩu gốc. */
 const RESET_SALT='thaco-pickleball-reset',RESET_HASH='ba88a33b722e706020ace718b8bd3af980516c95845c18b42c58f6123b22115f';
@@ -1098,7 +1104,7 @@ route();
   rulesRef=db.doc('meta/rules');rulesRef.onSnapshot(s=>onRules(s.exists?s.data():null),()=>{});
   col.onSnapshot(s=>{
     if(!s.metadata.fromCache)clearTimeout(timer);
-    got=true;matches=s.docs.filter(x=>x.exists).map(x=>Object.assign({id:x.id},x.data()));
+    got=true;matches=s.docs.filter(x=>x.exists).map(x=>decG(Object.assign({id:x.id},x.data())));
     const live=matches.filter(m=>m.status==='live').length;
     $('status').textContent=live?`${live} trận đang diễn ra · tự cập nhật`:'Tỉ số tự cập nhật khi trọng tài nhập điểm';
     render();
